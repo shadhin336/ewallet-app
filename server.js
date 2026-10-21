@@ -5,7 +5,6 @@ const cors = require('cors');
 const app = express();
 app.use(express.json());
 
-// Allow CORS for Vercel
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -59,7 +58,6 @@ const initDb = async () => {
 };
 initDb();
 
-// Base Test API
 app.get('/', (req, res) => {
   res.send('API Server is Live and Running!');
 });
@@ -207,7 +205,7 @@ app.post('/api/admin/approve', async (req, res) => {
     }
     res.json({ success: true, message: 'সফলভাবে এপ্রুভ করা হয়েছে!' });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
