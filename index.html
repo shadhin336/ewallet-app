@@ -18,426 +18,141 @@
             --text-sub: #94a3b8;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; }
+        .app-container { width: 100%; max-width: 480px; padding: 16px; padding-bottom: 90px; position: relative; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-        }
+        /* Auth Screen */
+        .auth-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 85vh; width: 100%; }
+        .auth-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 24px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .auth-title { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 6px; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .auth-subtitle { font-size: 13px; color: var(--text-sub); text-align: center; margin-bottom: 20px; }
+        
+        .tab-menu { display: flex; background: #0b0f19; border-radius: 10px; padding: 4px; margin-bottom: 20px; border: 1px solid var(--card-border); }
+        .tab-btn { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 8px; color: var(--text-sub); transition: 0.3s; }
+        .tab-btn.active { background: var(--accent-cyan); color: #000; }
 
-        .app-container {
-            width: 100%;
-            max-width: 480px;
-            padding: 16px;
-            padding-bottom: 90px;
-            position: relative;
-        }
+        .input-group { margin-bottom: 14px; }
+        .input-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 11px; background: #0b0f19; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
+        .btn-auth { width: 100%; padding: 12px; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
-        /* Authentication Screen Styles */
-        .auth-screen {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 85vh;
-            width: 100%;
-        }
+        /* Dashboard */
+        #dashboardView { display: none; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .logo { font-size: 20px; font-weight: 800; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 8px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink)); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; cursor: pointer; }
 
-        .auth-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 24px;
-            width: 100%;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            text-align: center;
-        }
+        .balance-card { background: linear-gradient(145deg, #182238, #0e1525); border: 1px solid var(--card-border); border-radius: 20px; padding: 20px; margin-bottom: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .balance-title { font-size: 11px; color: var(--text-sub); letter-spacing: 1px; text-transform: uppercase; }
+        .balance-amount { font-size: 32px; font-weight: 700; margin: 8px 0; color: #fff; }
 
-        .auth-title {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 8px;
-            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .auth-subtitle {
-            font-size: 13px;
-            color: var(--text-sub);
-            margin-bottom: 24px;
-        }
-
-        .input-group {
-            margin-bottom: 16px;
-            text-align: left;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 12px;
-            color: var(--text-sub);
-            margin-bottom: 6px;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px 14px;
-            background: #0b0f19;
-            border: 1px solid var(--card-border);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .input-group input:focus {
-            border-color: var(--accent-cyan);
-        }
-
-        .btn-auth {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple));
-            border: none;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 8px;
-            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
-        }
-
-        /* Dashboard View (Initially Hidden) */
-        #dashboardView {
-            display: none;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .logo {
-            font-size: 20px;
-            font-weight: 800;
-            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 16px;
-            box-shadow: 0 0 10px rgba(157, 78, 221, 0.4);
-            cursor: pointer;
-        }
-
-        .balance-card {
-            background: linear-gradient(145deg, #182238, #0e1525);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 20px;
-            position: relative;
-            margin-bottom: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-        }
-
-        .balance-title {
-            font-size: 11px;
-            color: var(--text-sub);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .balance-amount {
-            font-size: 32px;
-            font-weight: 700;
-            margin: 8px 0;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #fff;
-        }
-
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .action-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 12px 5px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .action-btn:active {
-            transform: scale(0.95);
-        }
-
-        .action-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
+        .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 15px; }
+        .action-btn { background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 14px; padding: 12px 5px; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
+        .action-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
         .bg-deposit { background: linear-gradient(135deg, #a855f7, #6b21a8); color: white; }
         .bg-withdraw { background: linear-gradient(135deg, #f43f5e, #be123c); color: white; }
         .bg-gateway { background: linear-gradient(135deg, #10b981, #047857); color: white; }
         .bg-users { background: linear-gradient(135deg, #f59e0b, #b45309); color: white; }
+        .action-label { font-size: 11px; color: var(--text-sub); }
 
-        .action-label {
-            font-size: 11px;
-            color: var(--text-sub);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            padding: 14px;
-            border-radius: 14px;
-        }
-
-        .stat-value {
-            font-size: 18px;
-            font-weight: bold;
-            margin-top: 4px;
-        }
-
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); padding: 14px; border-radius: 14px; }
+        .stat-value { font-size: 18px; font-weight: bold; margin-top: 4px; }
         .c-deposit { color: var(--accent-cyan); }
         .c-withdraw { color: var(--accent-pink); }
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .txn-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .txn-item {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .status-badge {
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: bold;
-        }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .section-title { font-size: 16px; font-weight: 600; }
+        .txn-list { display: flex; flex-direction: column; gap: 10px; }
+        .txn-item { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .status-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
         .status-Pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
         .status-Approved { background: rgba(16, 185, 129, 0.2); color: #10b981; }
 
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 480px;
-            background: rgba(21, 28, 44, 0.95);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid var(--card-border);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            z-index: 100;
-        }
+        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: rgba(21, 28, 44, 0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); font-size: 10px; cursor: pointer; }
+        .nav-item.active { color: var(--accent-cyan); }
 
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-sub);
-            font-size: 10px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .nav-item.active {
-            color: var(--accent-cyan);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
-            z-index: 200;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            width: 100%;
-            max-width: 400px;
-            border-radius: 16px;
-            padding: 20px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            color: var(--text-sub);
-            margin-bottom: 5px;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px;
-            background: #0b0f19;
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            color: #fff;
-            outline: none;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple));
-            border: none;
-            border-radius: 8px;
-            color: #fff;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .admin-num-box {
-            background: rgba(0, 242, 254, 0.1);
-            border: 1px dashed var(--accent-cyan);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            font-size: 13px;
-            text-align: center;
-        }
+        /* Modals */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 200; justify-content: center; align-items: center; padding: 16px; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); width: 100%; max-width: 400px; border-radius: 16px; padding: 20px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; background: #0b0f19; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; outline: none; }
+        .btn-submit { width: 100%; padding: 12px; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .admin-num-box { background: rgba(0, 242, 254, 0.1); border: 1px dashed var(--accent-cyan); padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; text-align: center; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
 
-    <!-- 1. LOGIN / SIGNUP SCREEN -->
+    <!-- AUTH SCREEN -->
     <div class="auth-screen" id="authView">
         <div class="auth-card">
-            <div style="font-size: 40px; margin-bottom: 10px; color: var(--accent-cyan);">
-                <i class="fa-solid fa-wallet"></i>
-            </div>
-            <div class="auth-title">E-WALLET</div>
-            <div class="auth-subtitle">আপনার ওয়ালেটে প্রবেশ করতে মোবাইল নাম্বার দিন</div>
+            <div class="auth-title"><i class="fa-solid fa-wallet"></i> E-WALLET</div>
+            <div class="auth-subtitle">আপনার ডিজিটাল ওয়ালেট সিস্টেম</div>
 
-            <div class="input-group">
-                <label>মোবাইল নাম্বার</label>
-                <input type="text" id="phoneInput" placeholder="01700000000">
+            <div class="tab-menu">
+                <div class="tab-btn active" id="loginTabBtn" onclick="switchTab('login')">লগইন</div>
+                <div class="tab-btn" id="regTabBtn" onclick="switchTab('register')">সাইন আপ (রেজিস্ট্রেশন)</div>
             </div>
 
-            <button class="btn-auth" onclick="handleAuth()">প্রবেশ করুন / অ্যাকাউন্ট খুলুন</button>
+            <!-- Login Form -->
+            <div id="loginForm">
+                <div class="input-group">
+                    <label>মোবাইল নাম্বার</label>
+                    <input type="text" id="loginPhone" placeholder="01700000000">
+                </div>
+                <div class="input-group">
+                    <label>সিক্রেট পিন (PIN)</label>
+                    <input type="password" id="loginPin" placeholder="****">
+                </div>
+                <button class="btn-auth" onclick="loginUser()">লগইন করুন</button>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" style="display: none;">
+                <div class="input-group">
+                    <label>মোবাইল নাম্বার</label>
+                    <input type="text" id="regPhone" placeholder="01700000000">
+                </div>
+                <div class="input-group">
+                    <label>নতুন পিন কোড (4 ডিজিট)</label>
+                    <input type="password" id="regPin" placeholder="****">
+                </div>
+                <div class="input-group">
+                    <label>রেফারেল কোড (যদি থাকে)</label>
+                    <input type="text" id="regRef" placeholder="যেমন: REF123456">
+                </div>
+                <button class="btn-auth" onclick="registerUser()">অ্যাকাউন্ট খুলুন</button>
+            </div>
         </div>
     </div>
 
-    <!-- 2. MAIN DASHBOARD VIEW (HIDDEN INITIALLY) -->
+    <!-- MAIN DASHBOARD -->
     <div id="dashboardView">
         <div class="header">
-            <div class="logo">
-                <i class="fa-solid fa-wallet"></i> E-WALLET
-            </div>
-            <div class="user-avatar" id="avatarIcon" onclick="logout()" title="লগআউট করতে চাপ দিন">U</div>
+            <div class="logo"><i class="fa-solid fa-wallet"></i> E-WALLET</div>
+            <div class="user-avatar" id="avatarIcon" onclick="logout()" title="লগআউট">U</div>
         </div>
 
-        <!-- Main Balance Card -->
         <div class="balance-card">
             <div class="balance-title">TOTAL WITHDRAWABLE BALANCE</div>
-            <div class="balance-amount">
-                ৳ <span id="userBalance">0.00</span>
-            </div>
+            <div class="balance-amount">৳ <span id="userBalance">0.00</span></div>
 
             <div class="quick-actions">
                 <div class="action-btn" onclick="openDepositModal()">
                     <div class="action-icon bg-deposit"><i class="fa-solid fa-plus"></i></div>
                     <div class="action-label">Deposit</div>
                 </div>
-                <div class="action-btn" onclick="alert('উইথড্র অপশন শীঘ্রই আসছে!')">
+                <div class="action-btn" onclick="openWithdrawModal()">
                     <div class="action-icon bg-withdraw"><i class="fa-solid fa-arrow-down"></i></div>
                     <div class="action-label">Withdraw</div>
                 </div>
-                <div class="action-btn" onclick="alert('গেটওয়ে প্রস্তুত!')">
+                <div class="action-btn" onclick="alert('গেটওয়ে নিরাপদ ও সক্রিয় আছে!')">
                     <div class="action-icon bg-gateway"><i class="fa-solid fa-credit-card"></i></div>
                     <div class="action-label">Gateway</div>
                 </div>
@@ -448,7 +163,6 @@
             </div>
         </div>
 
-        <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="balance-title">Total Deposit</div>
@@ -460,24 +174,19 @@
             </div>
         </div>
 
-        <!-- Transactions -->
         <div class="section-header">
             <div class="section-title">Recent Transactions</div>
         </div>
         <div class="txn-list" id="txnContainer">
-            <div style="text-align: center; color: var(--text-sub); font-size: 13px; padding: 20px;">
-                কোনো লেনদেন পাওয়া যায়নি।
-            </div>
+            <div style="text-align: center; color: var(--text-sub); font-size: 13px; padding: 20px;">কোনো লেনদেন পাওয়া যায়নি।</div>
         </div>
 
-        <!-- Bottom Navigation -->
         <div class="bottom-nav">
             <div class="nav-item active"><i class="fa-solid fa-house"></i> Home</div>
             <div class="nav-item" onclick="showReferralInfo()"><i class="fa-solid fa-users"></i> Refer</div>
             <div class="nav-item" onclick="openDepositModal()"><i class="fa-solid fa-wallet"></i> Wallet</div>
         </div>
     </div>
-
 </div>
 
 <!-- Deposit Modal -->
@@ -485,34 +194,58 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3>ডিপোজিট করুন</h3>
-            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal()"></i>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal('depositModal')"></i>
         </div>
         
         <div class="admin-num-box">
-            অ্যাডমিন ক্যাশ-আউট/সেন্ড মানি নাম্বার:<br>
-            <strong id="adminNumber">01700000000 (bKash/Nagad)</strong>
+            অ্যাডমিন বিকাশ/নগদ (Personal) নাম্বার:<br>
+            <strong style="color: var(--accent-cyan); font-size: 16px;">01960067933</strong><br>
+            <span style="font-size: 11px; color: var(--text-sub);">এই নম্বরে সেন্ড মানি করে TrxID দিন।</span>
         </div>
 
         <div class="form-group">
-            <label>পেমেন্ট মেথড সিলেক্ট করুন</label>
+            <label>পেমেন্ট মেথড</label>
             <select id="depMethod">
                 <option value="bKash">bKash (বিকাশ)</option>
                 <option value="Nagad">Nagad (নগদ)</option>
                 <option value="Rocket">Rocket (রকেট)</option>
             </select>
         </div>
-
         <div class="form-group">
             <label>টাকার পরিমাণ (BDT)</label>
             <input type="number" id="depAmount" placeholder="যেমন: 500">
         </div>
-
         <div class="form-group">
             <label>ট্রানজেকশন আইডি (TrxID)</label>
-            <input type="text" id="depTrx" placeholder="যেমন: 8N7X6W5Y">
+            <input type="text" id="depTrx" placeholder="যেমন: 9N8H7G6F">
         </div>
-
         <button class="btn-submit" onclick="submitDeposit()">ডিপোজিট জমা দিন</button>
+    </div>
+</div>
+
+<!-- Withdraw Modal -->
+<div class="modal" id="withdrawModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>টাকা উইথড্র করুন</h3>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal('withdrawModal')"></i>
+        </div>
+        <div class="form-group">
+            <label>মেথড সিলেক্ট করুন</label>
+            <select id="wdMethod">
+                <option value="bKash">bKash (বিকাশ)</option>
+                <option value="Nagad">Nagad (নগদ)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>আপনার অ্যাকাউন্ট নম্বর</label>
+            <input type="text" id="wdAccount" placeholder="যেমন: 01700000000">
+        </div>
+        <div class="form-group">
+            <label>উইথড্র পরিমাণ (BDT)</label>
+            <input type="number" id="wdAmount" placeholder="যেমন: 300">
+        </div>
+        <button class="btn-submit" onclick="submitWithdraw()">উইথড্র রিকোয়েস্ট পাঠান</button>
     </div>
 </div>
 
@@ -521,39 +254,77 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3>রেফারেল তথ্য</h3>
-            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeRefModal()"></i>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal('refModal')"></i>
         </div>
         <div class="form-group">
             <label>আপনার রেফারেল কোড</label>
             <input type="text" id="userRefCode" readonly>
         </div>
-        <p style="font-size: 12px; color: var(--text-sub);">
-            আপনার রেফার কোড দিয়ে বন্ধুদের জয়েন করালে বোনাস পাবেন!
-        </p>
+        <p style="font-size: 12px; color: var(--text-sub);">এই কোডটি বন্ধুদের সাথে শেয়ার করুন এবং বোনাস জিতুন!</p>
     </div>
 </div>
 
 <script>
-    // ⚠️ আপনার Render API লিঙ্কটি নিচে বসাবেন
-    const API_URL = "https://my-wallet-api-sml3.onrender.com/"; // আপনার Render এর আসল লিংক দিন
+    const API_URL = "https://my-wallet-api-sml3.onrender.com";
     let currentPhone = localStorage.getItem("ewallet_user") || "";
 
-    // Auto-login check on page load
     window.onload = function() {
-        if(currentPhone) {
-            showDashboard();
-        }
+        if(currentPhone) showDashboard();
     };
 
-    function handleAuth() {
-        const phone = document.getElementById("phoneInput").value.trim();
-        if (!phone || phone.length < 11) {
-            return alert("দয়া করে সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন!");
+    function switchTab(tab) {
+        if(tab === 'login') {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginTabBtn').classList.add('active');
+            document.getElementById('regTabBtn').classList.remove('active');
+        } else {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            document.getElementById('regTabBtn').classList.add('active');
+            document.getElementById('loginTabBtn').classList.remove('active');
         }
-        
-        currentPhone = phone;
-        localStorage.setItem("ewallet_user", phone);
-        showDashboard();
+    }
+
+    async function registerUser() {
+        const phone = document.getElementById("regPhone").value.trim();
+        const pin = document.getElementById("regPin").value.trim();
+        const ref_by = document.getElementById("regRef").value.trim();
+
+        if(!phone || !pin) return alert("মোবাইল নম্বর ও পিন দিন!");
+
+        const res = await fetch(`${API_URL}/api/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone, pin, ref_by })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if(data.success) {
+            currentPhone = phone;
+            localStorage.setItem("ewallet_user", phone);
+            showDashboard();
+        }
+    }
+
+    async function loginUser() {
+        const phone = document.getElementById("loginPhone").value.trim();
+        const pin = document.getElementById("loginPin").value.trim();
+
+        if(!phone || !pin) return alert("নম্বর ও পিন দিন!");
+
+        const res = await fetch(`${API_URL}/api/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone, pin })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if(data.success) {
+            currentPhone = phone;
+            localStorage.setItem("ewallet_user", phone);
+            showDashboard();
+        }
     }
 
     function showDashboard() {
@@ -564,90 +335,80 @@
     }
 
     function logout() {
-        if(confirm("আপনি কি লগআউট করতে চান?")) {
+        if(confirm("লগআউট করতে চান?")) {
             localStorage.removeItem("ewallet_user");
-            currentPhone = "";
-            document.getElementById("dashboardView").style.display = "none";
-            document.getElementById("authView").style.display = "flex";
+            location.reload();
         }
     }
 
     async function fetchUserData() {
         if(!currentPhone) return;
-        try {
-            const res = await fetch(`${API_URL}/api/user/${currentPhone}`);
-            const data = await res.json();
-            
-            if(data.user) {
-                document.getElementById("userBalance").innerText = parseFloat(data.user.balance).toFixed(2);
-                document.getElementById("totalDeposit").innerText = parseFloat(data.user.total_deposit).toFixed(2);
-                document.getElementById("totalReferrals").innerText = data.total_referrals || 0;
-                document.getElementById("userRefCode").value = data.user.ref_code;
-                
-                renderTransactions(data.transactions);
-            }
-        } catch (e) {
-            console.error("Error loading data:", e);
+        const res = await fetch(`${API_URL}/api/user/${currentPhone}`);
+        const data = await res.json();
+        if(data.user) {
+            document.getElementById("userBalance").innerText = parseFloat(data.user.balance).toFixed(2);
+            document.getElementById("totalDeposit").innerText = parseFloat(data.user.total_deposit).toFixed(2);
+            document.getElementById("totalReferrals").innerText = data.total_referrals || 0;
+            document.getElementById("userRefCode").value = data.user.ref_code;
+            renderTransactions(data.transactions);
         }
     }
 
-    function renderTransactions(transactions) {
+    function renderTransactions(txns) {
         const container = document.getElementById("txnContainer");
-        if(!transactions || transactions.length === 0) {
-            container.innerHTML = `<div style="text-align: center; color: var(--text-sub); font-size: 13px; padding: 20px;">কোনো লেনদেন পাওয়া যায়নি!</div>`;
+        if(!txns || txns.length === 0) {
+            container.innerHTML = `<div style="text-align: center; color: var(--text-sub); font-size: 13px; padding: 20px;">কোনো লেনদেন নেই!</div>`;
             return;
         }
-
-        container.innerHTML = transactions.map(t => `
+        container.innerHTML = txns.map(t => `
             <div class="txn-item">
                 <div>
                     <div style="font-weight: bold; font-size: 14px;">${t.type} (${t.method})</div>
-                    <div style="font-size: 11px; color: var(--text-sub);">TrxID: ${t.trx_id || 'N/A'}</div>
+                    <div style="font-size: 11px; color: var(--text-sub);">${t.trx_id}</div>
                 </div>
                 <div style="text-align: right;">
-                    <div style="font-weight: bold; font-size: 14px; color: var(--accent-cyan);">+৳${parseFloat(t.amount).toFixed(2)}</div>
+                    <div style="font-weight: bold; font-size: 14px; color: ${t.type==='Deposit'?'var(--accent-cyan)':'var(--accent-pink)'};">৳${parseFloat(t.amount).toFixed(2)}</div>
                     <span class="status-badge status-${t.status}">${t.status}</span>
                 </div>
             </div>
         `).join('');
     }
 
-    function openDepositModal() {
-        document.getElementById("depositModal").style.display = "flex";
-    }
-
-    function closeModal() {
-        document.getElementById("depositModal").style.display = "none";
-    }
-
-    function showReferralInfo() {
-        document.getElementById("refModal").style.display = "flex";
-    }
-
-    function closeRefModal() {
-        document.getElementById("refModal").style.display = "none";
-    }
+    function openDepositModal() { document.getElementById("depositModal").style.display = "flex"; }
+    function openWithdrawModal() { document.getElementById("withdrawModal").style.display = "flex"; }
+    function showReferralInfo() { document.getElementById("refModal").style.display = "flex"; }
+    function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
     async function submitDeposit() {
         const method = document.getElementById("depMethod").value;
         const amount = document.getElementById("depAmount").value;
         const trx_id = document.getElementById("depTrx").value.trim();
+        if(!amount || !trx_id) return alert("সব তথ্য দিন!");
 
-        if(!amount || !trx_id) return alert("সবগুলো তথ্য সঠিকভাবে পূরণ করুন!");
+        const res = await fetch(`${API_URL}/api/deposit`, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone: currentPhone, method, amount, trx_id })
+        });
+        const data = await res.json();
+        alert(data.message);
+        closeModal('depositModal');
+        fetchUserData();
+    }
 
-        try {
-            const res = await fetch(`${API_URL}/api/deposit`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ phone: currentPhone, method, amount, trx_id })
-            });
-            const data = await res.json();
-            alert(data.message);
-            closeModal();
-            fetchUserData();
-        } catch (e) {
-            alert("ডিপোজিট রিকোয়েস্ট পাঠাতে ব্যর্থ হয়েছে!");
-        }
+    async function submitWithdraw() {
+        const method = document.getElementById("wdMethod").value;
+        const account_no = document.getElementById("wdAccount").value.trim();
+        const amount = document.getElementById("wdAmount").value;
+        if(!account_no || !amount) return alert("সব তথ্য দিন!");
+
+        const res = await fetch(`${API_URL}/api/withdraw`, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone: currentPhone, method, amount, account_no })
+        });
+        const data = await res.json();
+        alert(data.message);
+        closeModal('withdrawModal');
+        fetchUserData();
     }
 </script>
 </body>
