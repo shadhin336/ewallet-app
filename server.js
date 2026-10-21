@@ -1,530 +1,215 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-WALLET | ডিজিটাল ওয়ালেট</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #0b0f19;
-            --card-bg: #151c2c;
-            --card-border: #232d42;
-            --accent-cyan: #00f2fe;
-            --accent-purple: #9d4edd;
-            --accent-pink: #ff007f;
-            --accent-green: #00e676;
-            --text-main: #ffffff;
-            --text-sub: #94a3b8;
-        }
+const express = require('express');
+const { Pool } = require('pg');
+const cors = require('cors');
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; }
-        .app-container { width: 100%; max-width: 480px; padding: 16px; padding-bottom: 90px; position: relative; }
+const app = express();
+app.use(express.json());
 
-        .auth-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 85vh; width: 100%; }
-        .auth-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 24px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .auth-title { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 6px; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .auth-subtitle { font-size: 13px; color: var(--text-sub); text-align: center; margin-bottom: 20px; }
-        
-        .tab-menu { display: flex; background: #0b0f19; border-radius: 10px; padding: 4px; margin-bottom: 20px; border: 1px solid var(--card-border); }
-        .tab-btn { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 8px; color: var(--text-sub); transition: 0.3s; }
-        .tab-btn.active { background: var(--accent-cyan); color: #000; }
+// Allow CORS for Vercel
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type']
+}));
 
-        .input-group { margin-bottom: 14px; }
-        .input-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; }
-        .input-group input, .input-group select { width: 100%; padding: 11px; background: #0b0f19; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
-        .btn-auth { width: 100%; padding: 12px; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
 
-        #dashboardView { display: none; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .logo { font-size: 20px; font-weight: 800; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 8px; }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink)); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; cursor: pointer; }
+const initDb = async () => {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        phone VARCHAR(20) UNIQUE NOT NULL,
+        pin VARCHAR(10) NOT NULL,
+        ref_code VARCHAR(20) UNIQUE NOT NULL,
+        referred_by VARCHAR(20),
+        balance DECIMAL DEFAULT 0.00,
+        total_deposit DECIMAL DEFAULT 0.00,
+        total_withdraw DECIMAL DEFAULT 0.00,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
 
-        .balance-card { background: linear-gradient(145deg, #182238, #0e1525); border: 1px solid var(--card-border); border-radius: 20px; padding: 20px; margin-bottom: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .balance-title { font-size: 11px; color: var(--text-sub); letter-spacing: 1px; text-transform: uppercase; }
-        .balance-amount { font-size: 32px; font-weight: 700; margin: 8px 0; color: #fff; }
+      CREATE TABLE IF NOT EXISTS transactions (
+        id SERIAL PRIMARY KEY,
+        phone VARCHAR(20) NOT NULL,
+        type VARCHAR(20) NOT NULL,
+        method VARCHAR(20) NOT NULL,
+        amount DECIMAL NOT NULL,
+        trx_id VARCHAR(100),
+        status VARCHAR(20) DEFAULT 'Pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
 
-        .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 15px; }
-        .action-btn { background: rgba(255,255,255,0.03); border: 1px solid var(--card-border); border-radius: 14px; padding: 12px 5px; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
-        .action-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-        .bg-deposit { background: linear-gradient(135deg, #a855f7, #6b21a8); color: white; }
-        .bg-withdraw { background: linear-gradient(135deg, #f43f5e, #be123c); color: white; }
-        .bg-gateway { background: linear-gradient(135deg, #10b981, #047857); color: white; }
-        .bg-users { background: linear-gradient(135deg, #f59e0b, #b45309); color: white; }
-        .action-label { font-size: 11px; color: var(--text-sub); }
+      CREATE TABLE IF NOT EXISTS user_gateways (
+        id SERIAL PRIMARY KEY,
+        phone VARCHAR(20) NOT NULL,
+        method VARCHAR(20) NOT NULL,
+        account_no VARCHAR(30) NOT NULL,
+        status VARCHAR(10) DEFAULT 'Active',
+        UNIQUE(phone, method)
+      );
+    `);
+    console.log("Database initialized successfully!");
+  } catch (err) {
+    console.error("Database Init Error:", err);
+  }
+};
+initDb();
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); padding: 14px; border-radius: 14px; }
-        .stat-value { font-size: 18px; font-weight: bold; margin-top: 4px; }
-        .c-deposit { color: var(--accent-cyan); }
-        .c-withdraw { color: var(--accent-pink); }
+// Base Test API
+app.get('/', (req, res) => {
+  res.send('API Server is Live and Running!');
+});
 
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .section-title { font-size: 16px; font-weight: 600; }
-        .txn-list { display: flex; flex-direction: column; gap: 10px; }
-        .txn-item { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .status-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
-        .status-Pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
-        .status-Approved { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-
-        .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: rgba(21, 28, 44, 0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--card-border); display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); font-size: 10px; cursor: pointer; }
-        .nav-item.active { color: var(--accent-cyan); }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 200; justify-content: center; align-items: center; padding: 16px; }
-        .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); width: 100%; max-width: 400px; border-radius: 16px; padding: 20px; max-height: 90vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; background: #0b0f19; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; outline: none; }
-        .btn-submit { width: 100%; padding: 12px; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .admin-num-box { background: rgba(0, 242, 254, 0.1); border: 1px dashed var(--accent-cyan); padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; text-align: center; }
-
-        .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
-        .amt-btn { background: #0b0f19; border: 1px solid var(--card-border); padding: 8px; border-radius: 6px; color: #fff; font-size: 13px; cursor: pointer; text-align: center; }
-        .gw-card { background: #0b0f19; border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
-        .gw-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-bottom: 8px; }
-    </style>
-</head>
-<body>
-
-<div class="app-container">
-
-    <div class="auth-screen" id="authView">
-        <div class="auth-card">
-            <div class="auth-title"><i class="fa-solid fa-wallet"></i> E-WALLET</div>
-            <div class="auth-subtitle">আপনার ডিজিটাল ওয়ালেট সিস্টেম</div>
-
-            <div class="tab-menu">
-                <div class="tab-btn active" id="loginTabBtn" onclick="switchTab('login')">লগইন</div>
-                <div class="tab-btn" id="regTabBtn" onclick="switchTab('register')">সাইন আপ (রেজিস্ট্রেশন)</div>
-            </div>
-
-            <div id="loginForm">
-                <div class="input-group">
-                    <label>মোবাইল নাম্বার</label>
-                    <input type="text" id="loginPhone" placeholder="01700000000">
-                </div>
-                <div class="input-group">
-                    <label>সিক্রেট পিন (PIN)</label>
-                    <input type="password" id="loginPin" placeholder="****">
-                </div>
-                <button class="btn-auth" onclick="loginUser()">লগইন করুন</button>
-            </div>
-
-            <div id="registerForm" style="display: none;">
-                <div class="input-group">
-                    <label>মোবাইল নাম্বার</label>
-                    <input type="text" id="regPhone" placeholder="01700000000">
-                </div>
-                <div class="input-group">
-                    <label>নতুন পিন কোড (4 ডিজিট)</label>
-                    <input type="password" id="regPin" placeholder="****">
-                </div>
-                <div class="input-group">
-                    <label>রেফারেল কোড (যদি থাকে)</label>
-                    <input type="text" id="regRef" placeholder="যেমন: REF123456">
-                </div>
-                <button class="btn-auth" onclick="registerUser()">অ্যাকাউন্ট খুলুন</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="dashboardView">
-        <div class="header">
-            <div class="logo"><i class="fa-solid fa-wallet"></i> E-WALLET</div>
-            <div class="user-avatar" id="avatarIcon" onclick="logout()" title="লগআউট">U</div>
-        </div>
-
-        <div class="balance-card">
-            <div class="balance-title">TOTAL WITHDRAWABLE BALANCE</div>
-            <div class="balance-amount">৳ <span id="userBalance">0.00</span></div>
-
-            <div class="quick-actions">
-                <div class="action-btn" onclick="openDepositModal()">
-                    <div class="action-icon bg-deposit"><i class="fa-solid fa-plus"></i></div>
-                    <div class="action-label">Deposit</div>
-                </div>
-                <div class="action-btn" onclick="openWithdrawModal()">
-                    <div class="action-icon bg-withdraw"><i class="fa-solid fa-arrow-down"></i></div>
-                    <div class="action-label">Withdraw</div>
-                </div>
-                <div class="action-btn" onclick="openGatewayModal()">
-                    <div class="action-icon bg-gateway"><i class="fa-solid fa-credit-card"></i></div>
-                    <div class="action-label">Gateway</div>
-                </div>
-                <div class="action-btn" onclick="showReferralInfo()">
-                    <div class="action-icon bg-users"><i class="fa-solid fa-user-plus"></i></div>
-                    <div class="action-label">Referral</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="balance-title">Total Deposit</div>
-                <div class="stat-value c-deposit">৳ <span id="totalDeposit">0.00</span></div>
-            </div>
-            <div class="stat-card">
-                <div class="balance-title">Total Referred</div>
-                <div class="stat-value c-withdraw"><span id="totalReferrals">0</span> জন</div>
-            </div>
-        </div>
-
-        <div class="section-header">
-            <div class="section-title">Recent Transactions</div>
-        </div>
-        <div class="txn-list" id="txnContainer">
-            <div style="text-align: center; color: var(--text-sub); font-size: 13px; padding: 20px;">কোনো লেনদেন পাওয়া যায়নি।</div>
-        </div>
-
-        <div class="bottom-nav">
-            <div class="nav-item active"><i class="fa-solid fa-house"></i> Home</div>
-            <div class="nav-item" onclick="showReferralInfo()"><i class="fa-solid fa-users"></i> Refer</div>
-            <div class="nav-item" onclick="openDepositModal()"><i class="fa-solid fa-wallet"></i> Wallet</div>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="depositModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>ডিপোজিট করুন</h3>
-            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal('depositModal')"></i>
-        </div>
-        
-        <div class="admin-num-box">
-            অ্যাডমিন বিকাশ/নগদ (Personal) নাম্বার:<br>
-            <strong style="color: var(--accent-cyan); font-size: 16px;">01960067933</strong><br>
-            <span style="font-size: 11px; color: var(--text-sub);">এই নম্বরে সেন্ড মানি করে TrxID দিন।</span>
-        </div>
-
-        <div class="form-group">
-            <label>পেমেন্ট মেথড</label>
-            <select id="depMethod">
-                <option value="bKash">bKash (বিকাশ)</option>
-                <option value="Nagad">Nagad (নগদ)</option>
-                <option value="Rocket">Rocket (রকেট)</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>টাকার পরিমাণ সিলেক্ট করুন</label>
-            <div class="amount-grid">
-                <div class="amt-btn" onclick="selectAmount(100)">100</div>
-                <div class="amt-btn" onclick="selectAmount(200)">200</div>
-                <div class="amt-btn" onclick="selectAmount(300)">300</div>
-                <div class="amt-btn" onclick="selectAmount(500)">500</div>
-                <div class="amt-btn" onclick="selectAmount(1000)">1000</div>
-                <div class="amt-btn" onclick="selectAmount(2000)">2000</div>
-            </div>
-            <input type="number" id="depAmount" placeholder="অথবা নিজের পরিমাণ লিখুন">
-        </div>
-        <div class="form-group">
-            <label>ট্রানজেকশন আইডি (TrxID)</label>
-            <input type="text" id="depTrx" placeholder="যেমন: 9N8H7G6F">
-        </div>
-        <button class="btn-submit" onclick="submitDeposit()">ডিপোজিট জমা দিন</button>
-    </div>
-</div>
-
-<div class="modal" id="gatewayModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>পেমেন্ট গেটওয়ে অ্যাকাউন্ট</h3>
-            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal('gatewayModal')"></i>
-        </div>
-        <div class="gw-card">
-            <div class="gw-header"><span>bKash</span> <span id="status_bKash" style="color:var(--text-sub)">Inactive</span></div>
-            <div class="form-group" style="margin-bottom:8px;"><input type="text" id="acc_bKash" placeholder="বিকাশ নম্বর"></div>
-            <div style="display:flex; gap:8px;">
-                <select id="st_bKash" style="padding:6px; font-size:12px;"><option value="Active">Active</option><option value="Inactive">Inactive</option></select>
-                <button class="btn-submit" style="margin-top:0; padding:6px 12px;" onclick="saveGateway('bKash')">সেভ</button>
-            </div>
-        </div>
-        <div class="gw-card">
-            <div class="gw-header"><span>Nagad</span> <span id="status_Nagad" style="color:var(--text-sub)">Inactive</span></div>
-            <div class="form-group" style="margin-bottom:8px;"><input type="text" id="acc_Nagad" placeholder="নগদ নম্বর"></div>
-            <div style="display:flex; gap:8px;">
-                <select id="st_Nagad" style="padding:6px; font-size:12px;"><option value="Active">Active</option><option value="Inactive">Inactive</option></select>
-                <button class="btn-submit" style="margin-top:0; padding:6px 12px;" onclick="saveGateway('Nagad')">সেভ</button>
-            </div>
-        </div>
-        <div class="gw-card">
-            <div class="gw-header"><span>Rocket</span> <span id="status_Rocket" style="color:var(--text-sub)">Inactive</span></div>
-            <div class="form-group" style="margin-bottom:8px;"><input type="text" id="acc_Rocket" placeholder="রকেট নম্বর"></div>
-            <div style="display:flex; gap:8px;">
-                <select id="st_Rocket" style="padding:6px; font-size:12px;"><option value="Active">Active</option><option value="Inactive">Inactive</option></select>
-                <button class="btn-submit" style="margin-top:0; padding:6px 12px;" onclick="saveGateway('Rocket')">সেভ</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="withdrawModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>টাকা উইথড্র করুন</h3>
-            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal('withdrawModal')"></i>
-        </div>
-        <div class="form-group">
-            <label>মেথড</label>
-            <select id="wdMethod"><option value="bKash">bKash</option><option value="Nagad">Nagad</option></select>
-        </div>
-        <div class="form-group">
-            <label>অ্যাকাউন্ট নম্বর</label>
-            <input type="text" id="wdAccount" placeholder="নম্বর দিন">
-        </div>
-        <div class="form-group">
-            <label>পরিমাণ</label>
-            <div class="amount-grid">
-                <div class="amt-btn" onclick="selectWdAmount(100)">100</div>
-                <div class="amt-btn" onclick="selectWdAmount(200)">200</div>
-                <div class="amt-btn" onclick="selectWdAmount(500)">500</div>
-                <div class="amt-btn" onclick="selectWdAmount(1000)">1000</div>
-                <div class="amt-btn" onclick="selectWdAmount(2000)">2000</div>
-                <div class="amt-btn" onclick="selectWdAmount(5000)">5000</div>
-            </div>
-            <input type="number" id="wdAmount" placeholder="পরিমাণ লিখুন">
-        </div>
-        <button class="btn-submit" onclick="submitWithdraw()">উইথড্র রিকোয়েস্ট পাঠান</button>
-    </div>
-</div>
-
-<div class="modal" id="refModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>রেফারেল তথ্য</h3>
-            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal('refModal')"></i>
-        </div>
-        <div class="form-group">
-            <label>রেফারেল কোড</label>
-            <input type="text" id="userRefCode" readonly>
-        </div>
-    </div>
-</div>
-
-<script>
-    const API_URL = "https://my-wallet-api-sml3.onrender.com";
-    let currentPhone = localStorage.getItem("ewallet_user") || "";
-    let userGateways = [];
-
-    window.onload = function() {
-        if(currentPhone) showDashboard();
-    };
-
-    function switchTab(tab) {
-        if(tab === 'login') {
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('registerForm').style.display = 'none';
-            document.getElementById('loginTabBtn').classList.add('active');
-            document.getElementById('regTabBtn').classList.remove('active');
-        } else {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'block';
-            document.getElementById('regTabBtn').classList.add('active');
-            document.getElementById('loginTabBtn').classList.remove('active');
-        }
+// Register API
+app.post('/api/register', async (req, res) => {
+  try {
+    const { phone, pin, ref_by } = req.body;
+    if (!phone || !pin) {
+      return res.status(400).json({ success: false, message: 'মোবাইল নম্বর ও পিন বাধ্যতামূলক!' });
     }
 
-    async function registerUser() {
-        const phone = document.getElementById("regPhone").value.trim();
-        const pin = document.getElementById("regPin").value.trim();
-        const ref_by = document.getElementById("regRef").value.trim();
-
-        if(!phone || !pin) {
-            alert("দয়া করে মোবাইল নাম্বার ও পিন দিন!");
-            return;
-        }
-
-        try {
-            const res = await fetch(`${API_URL}/api/register`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ phone, pin, ref_by })
-            });
-            const data = await res.json();
-            
-            alert(data.message || "রেজিস্ট্রেশন সম্পন্ন হয়েছে!");
-
-            if(data.success === true) {
-                currentPhone = phone;
-                localStorage.setItem("ewallet_user", phone);
-                showDashboard();
-            }
-        } catch (e) {
-            alert("সার্ভারে সংযোগ স্থাপন করা যায়নি!");
-        }
+    let userCheck = await pool.query('SELECT * FROM users WHERE phone = $1', [phone]);
+    if (userCheck.rows.length > 0) {
+      return res.status(400).json({ success: false, message: 'এই নম্বর দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট রয়েছে!' });
     }
 
-    async function loginUser() {
-        const phone = document.getElementById("loginPhone").value.trim();
-        const pin = document.getElementById("loginPin").value.trim();
+    const refCode = 'REF' + Math.floor(100000 + Math.random() * 900000);
+    const newUser = await pool.query(
+      'INSERT INTO users (phone, pin, ref_code, referred_by) VALUES ($1, $2, $3, $4) RETURNING *',
+      [phone, pin, refCode, ref_by || null]
+    );
+    res.json({ success: true, message: 'সফলভাবে অ্যাকাউন্ট তৈরি হয়েছে!', user: newUser.rows[0] });
+  } catch (err) {
+    console.error("Register Error:", err);
+    res.status(500).json({ success: false, message: 'রেজিস্ট্রেশন প্রক্রিয়ায় ব্যাকএন্ড সমস্যা হয়েছে!' });
+  }
+});
 
-        if(!phone || !pin) {
-            alert("দয়া করে মোবাইল নাম্বার ও পিন দিন!");
-            return;
-        }
+// Login API
+app.post('/api/login', async (req, res) => {
+  try {
+    const { phone, pin } = req.body;
+    const user = await pool.query('SELECT * FROM users WHERE phone = $1 AND pin = $2', [phone, pin]);
+    
+    if (user.rows.length === 0) {
+      return res.status(400).json({ success: false, message: 'ভুল মোবাইল নম্বর অথবা পিন কোড!' });
+    }
+    res.json({ success: true, message: 'লগইন সফল হয়েছে!', user: user.rows[0] });
+  } catch (err) {
+    console.error("Login Error:", err);
+    res.status(500).json({ success: false, message: 'লগইন প্রক্রিয়ায় ব্যাকএন্ড সমস্যা হয়েছে!' });
+  }
+});
 
-        try {
-            const res = await fetch(`${API_URL}/api/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ phone, pin })
-            });
-            const data = await res.json();
+// Get User Data & Gateways
+app.get('/api/user/:phone', async (req, res) => {
+  try {
+    const { phone } = req.params;
+    const user = await pool.query('SELECT * FROM users WHERE phone = $1', [phone]);
+    if (user.rows.length === 0) return res.status(404).json({ error: 'User not found' });
+    
+    const referrals = await pool.query('SELECT COUNT(*) FROM users WHERE referred_by = $1', [user.rows[0].ref_code]);
+    const txns = await pool.query('SELECT * FROM transactions WHERE phone = $1 ORDER BY id DESC', [phone]);
+    const gateways = await pool.query('SELECT * FROM user_gateways WHERE phone = $1', [phone]);
 
-            alert(data.message || "লগইন প্রসেস সম্পন্ন হয়েছে!");
+    res.json({
+      user: user.rows[0],
+      total_referrals: parseInt(referrals.rows[0].count),
+      transactions: txns.rows,
+      gateways: gateways.rows
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-            if(data.success === true) {
-                currentPhone = phone;
-                localStorage.setItem("ewallet_user", phone);
-                showDashboard();
-            }
-        } catch (e) {
-            alert("সার্ভারে সংযোগ স্থাপন করা যায়নি!");
-        }
+// Save Gateway
+app.post('/api/gateway/save', async (req, res) => {
+  try {
+    const { phone, method, account_no, status } = req.body;
+    await pool.query(`
+      INSERT INTO user_gateways (phone, method, account_no, status) 
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT (phone, method) 
+      DO UPDATE SET account_no = $3, status = $4
+    `, [phone, method, account_no, status]);
+    res.json({ success: true, message: 'গেটওয়ে তথ্য সংরক্ষিত হয়েছে!' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Deposit Request
+app.post('/api/deposit', async (req, res) => {
+  try {
+    const { phone, method, amount, trx_id } = req.body;
+    await pool.query(
+      'INSERT INTO transactions (phone, type, method, amount, trx_id) VALUES ($1, $2, $3, $4, $5)',
+      [phone, 'Deposit', method, amount, trx_id]
+    );
+    res.json({ success: true, message: 'ডিপোজিট রিকোয়েস্ট সফলভাবে জমা হয়েছে!' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Withdraw Request
+app.post('/api/withdraw', async (req, res) => {
+  try {
+    const { phone, method, amount, account_no } = req.body;
+    const user = await pool.query('SELECT balance FROM users WHERE phone = $1', [phone]);
+    
+    if(user.rows[0].balance < amount) {
+      return res.status(400).json({ success: false, message: 'আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স নেই!' });
     }
 
-    function showDashboard() {
-        document.getElementById("authView").style.display = "none";
-        document.getElementById("dashboardView").style.display = "block";
-        document.getElementById("avatarIcon").innerText = currentPhone.slice(-2);
-        fetchUserData();
+    await pool.query('UPDATE users SET balance = balance - $1 WHERE phone = $2', [amount, phone]);
+    await pool.query(
+      'INSERT INTO transactions (phone, type, method, amount, trx_id) VALUES ($1, $2, $3, $4, $5)',
+      [phone, 'Withdraw', method, amount, `To: ${account_no}`]
+    );
+    res.json({ success: true, message: 'উইথড্র রিকোয়েস্ট সফলভাবে পাঠানো হয়েছে!' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Admin Pending Transactions
+app.get('/api/admin/pending', async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM transactions WHERE status = 'Pending' ORDER BY id DESC");
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Admin Approve Transaction
+app.post('/api/admin/approve', async (req, res) => {
+  try {
+    const { txn_id, phone, amount, type } = req.body;
+    await pool.query("UPDATE transactions SET status = 'Approved' WHERE id = $1", [txn_id]);
+    
+    if (type === 'Deposit') {
+      await pool.query(
+        "UPDATE users SET balance = balance + $1, total_deposit = total_deposit + $1 WHERE phone = $2",
+        [amount, phone]
+      );
+    } else if (type === 'Withdraw') {
+      await pool.query(
+        "UPDATE users SET total_withdraw = total_withdraw + $1 WHERE phone = $2",
+        [amount, phone]
+      );
     }
+    res.json({ success: true, message: 'সফলভাবে এপ্রুভ করা হয়েছে!' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
 
-    function logout() {
-        if(confirm("লগআউট করতে চান?")) {
-            localStorage.removeItem("ewallet_user");
-            location.reload();
-        }
-    }
-
-    async function fetchUserData() {
-        if(!currentPhone) return;
-        try {
-            const res = await fetch(`${API_URL}/api/user/${currentPhone}`);
-            const data = await res.json();
-            if(data.user) {
-                document.getElementById("userBalance").innerText = parseFloat(data.user.balance).toFixed(2);
-                document.getElementById("totalDeposit").innerText = parseFloat(data.user.total_deposit).toFixed(2);
-                document.getElementById("totalReferrals").innerText = data.total_referrals || 0;
-                document.getElementById("userRefCode").value = data.user.ref_code;
-                
-                userGateways = data.gateways || [];
-                updateGatewayUI();
-                renderTransactions(data.transactions);
-            }
-        } catch (e) {
-            console.error("Error fetching user data");
-        }
-    }
-
-    function updateGatewayUI() {
-        ['bKash', 'Nagad', 'Rocket'].forEach(m => {
-            const found = userGateways.find(g => g.method === m);
-            if(found) {
-                document.getElementById(`acc_${m}`).value = found.account_no;
-                document.getElementById(`st_${m}`).value = found.status;
-                const statusSpan = document.getElementById(`status_${m}`);
-                statusSpan.innerText = found.status;
-                statusSpan.style.color = found.status === 'Active' ? 'var(--accent-green)' : 'var(--accent-pink)';
-            }
-        });
-    }
-
-    async function saveGateway(method) {
-        const account_no = document.getElementById(`acc_${method}`).value.trim();
-        const status = document.getElementById(`st_${method}`).value;
-        if(!account_no) {
-            alert("অ্যাকাউন্ট নম্বর দিন!");
-            return;
-        }
-
-        try {
-            const res = await fetch(`${API_URL}/api/gateway/save`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ phone: currentPhone, method, account_no, status })
-            });
-            const data = await res.json();
-            alert(data.message || "সংরক্ষিত হয়েছে!");
-            fetchUserData();
-        } catch (e) {
-            alert("সংরক্ষণ করতে সমস্যা হয়েছে!");
-        }
-    }
-
-    function selectAmount(val) { document.getElementById("depAmount").value = val; }
-    function selectWdAmount(val) { document.getElementById("wdAmount").value = val; }
-
-    function renderTransactions(txns) {
-        const container = document.getElementById("txnContainer");
-        if(!txns || txns.length === 0) {
-            container.innerHTML = `<div style="text-align: center; color: var(--text-sub); font-size: 13px; padding: 20px;">কোনো লেনদেন নেই!</div>`;
-            return;
-        }
-        container.innerHTML = txns.map(t => `
-            <div class="txn-item">
-                <div>
-                    <div style="font-weight: bold; font-size: 14px;">${t.type} (${t.method})</div>
-                    <div style="font-size: 11px; color: var(--text-sub);">${t.trx_id}</div>
-                </div>
-                <div style="text-align: right;">
-                    <div style="font-weight: bold; font-size: 14px; color: ${t.type==='Deposit'?'var(--accent-cyan)':'var(--accent-pink)'};">৳${parseFloat(t.amount).toFixed(2)}</div>
-                    <span class="status-badge status-${t.status}">${t.status}</span>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function openDepositModal() { document.getElementById("depositModal").style.display = "flex"; }
-    function openWithdrawModal() { document.getElementById("withdrawModal").style.display = "flex"; }
-    function openGatewayModal() { document.getElementById("gatewayModal").style.display = "flex"; }
-    function showReferralInfo() { document.getElementById("refModal").style.display = "flex"; }
-    function closeModal(id) { document.getElementById(id).style.display = "none"; }
-
-    async function submitDeposit() {
-        const method = document.getElementById("depMethod").value;
-        const amount = document.getElementById("depAmount").value;
-        const trx_id = document.getElementById("depTrx").value.trim();
-        if(!amount || !trx_id) {
-            alert("সব তথ্য দিন!");
-            return;
-        }
-
-        try {
-            const res = await fetch(`${API_URL}/api/deposit`, {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ phone: currentPhone, method, amount, trx_id })
-            });
-            const data = await res.json();
-            alert(data.message || "জমা হয়েছে!");
-            closeModal('depositModal');
-            fetchUserData();
-        } catch (e) { alert("সমস্যা হয়েছে!"); }
-    }
-
-    async function submitWithdraw() {
-        const method = document.getElementById("wdMethod").value;
-        const account_no = document.getElementById("wdAccount").value.trim();
-        const amount = document.getElementById("wdAmount").value;
-        if(!account_no || !amount) {
-            alert("সব তথ্য দিন!");
-            return;
-        }
-
-        try {
-            const res = await fetch(`${API_URL}/api/withdraw`, {
-                method: "POST", headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ phone: currentPhone, method, amount, account_no })
-            });
-            const data = await res.json();
-            alert(data.message || "উইথড্র রিকোয়েস্ট গেছে!");
-            closeModal('withdrawModal');
-            fetchUserData();
-        } catch (e) { alert("সমস্যা হয়েছে!"); }
-    }
-</script>
-</body>
-</html>
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
