@@ -91,7 +91,6 @@
 
 <div class="app-container">
 
-    <!-- AUTH SCREEN -->
     <div class="auth-screen" id="authView">
         <div class="auth-card">
             <div class="auth-title"><i class="fa-solid fa-wallet"></i> E-WALLET</div>
@@ -102,7 +101,6 @@
                 <div class="tab-btn" id="regTabBtn" onclick="switchTab('register')">সাইন আপ (রেজিস্ট্রেশন)</div>
             </div>
 
-            <!-- Login Form -->
             <div id="loginForm">
                 <div class="input-group">
                     <label>মোবাইল নাম্বার</label>
@@ -115,7 +113,6 @@
                 <button class="btn-auth" onclick="loginUser()">লগইন করুন</button>
             </div>
 
-            <!-- Register Form -->
             <div id="registerForm" style="display: none;">
                 <div class="input-group">
                     <label>মোবাইল নাম্বার</label>
@@ -134,7 +131,6 @@
         </div>
     </div>
 
-    <!-- MAIN DASHBOARD -->
     <div id="dashboardView">
         <div class="header">
             <div class="logo"><i class="fa-solid fa-wallet"></i> E-WALLET</div>
@@ -191,7 +187,6 @@
     </div>
 </div>
 
-<!-- Deposit Modal -->
 <div class="modal" id="depositModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -233,7 +228,6 @@
     </div>
 </div>
 
-<!-- Gateway Modal -->
 <div class="modal" id="gatewayModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -267,7 +261,6 @@
     </div>
 </div>
 
-<!-- Withdraw Modal -->
 <div class="modal" id="withdrawModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -298,7 +291,6 @@
     </div>
 </div>
 
-<!-- Referral Modal -->
 <div class="modal" id="refModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -353,9 +345,9 @@
             });
             const data = await res.json();
             
-            alert(data.message);
+            alert(data.message || "রেজিস্ট্রেশন সম্পন্ন হয়েছে!");
 
-            if(data.success) {
+            if(data.success === true) {
                 currentPhone = phone;
                 localStorage.setItem("ewallet_user", phone);
                 showDashboard();
@@ -382,9 +374,9 @@
             });
             const data = await res.json();
 
-            alert(data.message);
+            alert(data.message || "লগইন প্রসেস সম্পন্ন হয়েছে!");
 
-            if(data.success) {
+            if(data.success === true) {
                 currentPhone = phone;
                 localStorage.setItem("ewallet_user", phone);
                 showDashboard();
@@ -456,7 +448,7 @@
                 body: JSON.stringify({ phone: currentPhone, method, account_no, status })
             });
             const data = await res.json();
-            alert(data.message);
+            alert(data.message || "সংরক্ষিত হয়েছে!");
             fetchUserData();
         } catch (e) {
             alert("সংরক্ষণ করতে সমস্যা হয়েছে!");
@@ -507,7 +499,7 @@
                 body: JSON.stringify({ phone: currentPhone, method, amount, trx_id })
             });
             const data = await res.json();
-            alert(data.message);
+            alert(data.message || "জমা হয়েছে!");
             closeModal('depositModal');
             fetchUserData();
         } catch (e) { alert("সমস্যা হয়েছে!"); }
@@ -528,7 +520,7 @@
                 body: JSON.stringify({ phone: currentPhone, method, amount, account_no })
             });
             const data = await res.json();
-            alert(data.message);
+            alert(data.message || "উইথড্র রিকোয়েস্ট গেছে!");
             closeModal('withdrawModal');
             fetchUserData();
         } catch (e) { alert("সমস্যা হয়েছে!"); }
