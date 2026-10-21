@@ -17,166 +17,43 @@
             --text-sub: #9ca3af;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 16px;
-        }
-
-        .admin-container {
-            width: 100%;
-            max-width: 600px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--card-border);
-            margin-bottom: 20px;
-        }
-
-        .logo {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--accent-cyan);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .badge-admin {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--accent-red);
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-weight: bold;
-            border: 1px solid rgba(239, 68, 68, 0.4);
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 16px;
-        }
-
-        .card-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .pending-item {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .item-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-        }
-
-        .item-label {
-            color: var(--text-sub);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-size: 13px;
-        }
-
-        .btn-approve {
-            background: var(--accent-green);
-            color: #000;
-        }
-
-        .btn-reject {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--accent-red);
-            border: 1px solid var(--accent-red);
-        }
-
-        .refresh-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; padding: 16px; }
+        .admin-container { width: 100%; max-width: 600px; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--card-border); margin-bottom: 20px; }
+        .logo { font-size: 20px; font-weight: 800; color: var(--accent-cyan); display: flex; align-items: center; gap: 8px; }
+        .badge-admin { background: rgba(239, 68, 68, 0.2); color: var(--accent-red); font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: bold; border: 1px solid rgba(239, 68, 68, 0.4); }
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
+        .pending-item { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .item-row { display: flex; justify-content: space-between; font-size: 14px; }
+        .item-label { color: var(--text-sub); }
+        .btn { width: 100%; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; margin-top: 8px; }
+        .btn-approve { background: var(--accent-green); color: #000; }
+        .refresh-btn { background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-main); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; }
     </style>
 </head>
 <body>
 
 <div class="admin-container">
     <div class="header">
-        <div class="logo">
-            <i class="fa-solid fa-user-shield"></i> অ্যাডমিন কন্ট্রোল প্যানেল
-        </div>
+        <div class="logo"><i class="fa-solid fa-user-shield"></i> অ্যাডমিন কন্ট্রোল প্যানেল</div>
         <div class="badge-admin">SECRET PANEL</div>
     </div>
 
     <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <div class="card-title" style="margin: 0;">
-                <i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-cyan);"></i> পেন্ডিং ডিপোজিট সমূহ
-            </div>
-            <button class="refresh-btn" onclick="loadPendingDeposits()">
-                <i class="fa-solid fa-rotate"></i> রিফ্রেশ
-            </button>
+            <div style="font-size: 16px; font-weight: 600;"><i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-cyan);"></i> পেন্ডিং রিকোয়েস্ট সমূহ</div>
+            <button class="refresh-btn" onclick="loadPendingDeposits()"><i class="fa-solid fa-rotate"></i> রিফ্রেশ</button>
         </div>
 
         <div id="pendingList">
-            <div style="text-align: center; color: var(--text-sub); padding: 30px; font-size: 14px;">
-                ডাটা লোড হচ্ছে...
-            </div>
+            <div style="text-align: center; color: var(--text-sub); padding: 30px; font-size: 14px;">ডাটা লোড হচ্ছে...</div>
         </div>
     </div>
 </div>
 
 <script>
-    // ⚠️ আপনার Render Web Service লাইভ হওয়ার পর প্রাপ্ত URL টি নিচে 'YOUR_RENDER_API_URL' এর জায়গায় বসাবেন
-    const API_URL = "https://my-wallet-api-sml3.onrender.com/";
+    const API_URL = "https://my-wallet-api-sml3.onrender.com";
 
     async function loadPendingDeposits() {
         const container = document.getElementById("pendingList");
@@ -187,49 +64,35 @@
             const txns = await res.json();
 
             if (!txns || txns.length === 0) {
-                container.innerHTML = `<div style="text-align: center; color: var(--text-sub); padding: 30px;">বর্তমানে কোনো পেন্ডিং ডিপোজিট নেই!</div>`;
+                container.innerHTML = `<div style="text-align: center; color: var(--text-sub); padding: 30px;">বর্তমানে কোনো পেন্ডিং রিকোয়েস্ট নেই!</div>`;
                 return;
             }
 
             container.innerHTML = txns.map(t => `
                 <div class="pending-item">
-                    <div class="item-row">
-                        <span class="item-label">ইউজার নম্বর:</span>
-                        <span style="font-weight: bold; color: var(--accent-cyan);">${t.phone}</span>
-                    </div>
-                    <div class="item-row">
-                        <span class="item-label">মেথড:</span>
-                        <span>${t.method}</span>
-                    </div>
-                    <div class="item-row">
-                        <span class="item-label">পরিমাণ:</span>
-                        <span style="font-weight: bold; color: var(--accent-green); font-size: 16px;">৳${parseFloat(t.amount).toFixed(2)}</span>
-                    </div>
-                    <div class="item-row">
-                        <span class="item-label">TrxID:</span>
-                        <span style="background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; font-family: monospace;">${t.trx_id || 'N/A'}</span>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-approve" onclick="approveDeposit(${t.id}, '${t.phone}', ${t.amount})">
-                            <i class="fa-solid fa-check"></i> অ্যাপ্রুভ (ওকে) করুন
-                        </button>
-                    </div>
+                    <div class="item-row"><span class="item-label">টাইপ:</span> <strong style="color:${t.type==='Deposit'?'var(--accent-cyan)':'var(--accent-red)'}">${t.type}</strong></div>
+                    <div class="item-row"><span class="item-label">ইউজার নম্বর:</span> <span style="color: var(--accent-cyan);">${t.phone}</span></div>
+                    <div class="item-row"><span class="item-label">মেথড:</span> <span>${t.method}</span></div>
+                    <div class="item-row"><span class="item-label">পরিমাণ:</span> <span style="font-weight: bold; color: var(--accent-green); font-size: 16px;">৳${parseFloat(t.amount).toFixed(2)}</span></div>
+                    <div class="item-row"><span class="item-label">ডিটেইলস / TrxID:</span> <span style="background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; font-family: monospace;">${t.trx_id || 'N/A'}</span></div>
+                    <button class="btn btn-approve" onclick="approveTxn(${t.id}, '${t.phone}', ${t.amount}, '${t.type}')">
+                        <i class="fa-solid fa-check"></i> অ্যাপ্রুভ (ওকে) করুন
+                    </button>
                 </div>
             `).join('');
-
         } catch (e) {
             container.innerHTML = `<div style="text-align: center; color: var(--accent-red); padding: 20px;">ডাটা লোড করতে সমস্যা হয়েছে! API লিংক চেক করুন।</div>`;
         }
     }
 
-    async function approveDeposit(txnId, phone, amount) {
-        if (!confirm(`${phone} নম্বরের ৳${amount} ডিপোজিট ওকে করতে চান?`)) return;
+    async function approveTxn(txnId, phone, amount, type) {
+        if (!confirm(`${phone} এর ৳${amount} (${type}) অ্যাপ্রুভ করতে চান?`)) return;
 
         try {
             const res = await fetch(`${API_URL}/api/admin/approve`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ txn_id: txnId, phone: phone, amount: amount })
+                body: JSON.stringify({ txn_id: txnId, phone: phone, amount: amount, type: type })
             });
 
             const data = await res.json();
@@ -240,9 +103,7 @@
         }
     }
 
-    // পেজ লোড হলেই পেন্ডিং ডাটা লোড হবে
     loadPendingDeposits();
 </script>
 </body>
 </html>
-
