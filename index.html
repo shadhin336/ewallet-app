@@ -372,17 +372,21 @@
 
         if(!phone || !pin) return alert("মোবাইল নম্বর ও পিন দিন!");
 
-        const res = await fetch(`${API_URL}/api/register`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ phone, pin, ref_by })
-        });
-        const data = await res.json();
-        alert(data.message);
-        if(data.success) {
-            currentPhone = phone;
-            localStorage.setItem("ewallet_user", phone);
-            showDashboard();
+        try {
+            const res = await fetch(`${API_URL}/api/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ phone, pin, ref_by })
+            });
+            const data = await res.json();
+            alert(data.message || "রেজিস্ট্রেশন সফল হয়েছে!");
+            if(data.success) {
+                currentPhone = phone;
+                localStorage.setItem("ewallet_user", phone);
+                showDashboard();
+            }
+        } catch (e) {
+            alert("সার্ভারে সংযোগ স্থাপন করা যায়নি!");
         }
     }
 
@@ -392,17 +396,21 @@
 
         if(!phone || !pin) return alert("নম্বর ও পিন দিন!");
 
-        const res = await fetch(`${API_URL}/api/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ phone, pin })
-        });
-        const data = await res.json();
-        alert(data.message);
-        if(data.success) {
-            currentPhone = phone;
-            localStorage.setItem("ewallet_user", phone);
-            showDashboard();
+        try {
+            const res = await fetch(`${API_URL}/api/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ phone, pin })
+            });
+            const data = await res.json();
+            alert(data.message || "লগইন সফল হয়েছে!");
+            if(data.success) {
+                currentPhone = phone;
+                localStorage.setItem("ewallet_user", phone);
+                showDashboard();
+            }
+        } catch (e) {
+            alert("সার্ভারে সংযোগ স্থাপন করা যায়নি!");
         }
     }
 
@@ -422,17 +430,21 @@
 
     async function fetchUserData() {
         if(!currentPhone) return;
-        const res = await fetch(`${API_URL}/api/user/${currentPhone}`);
-        const data = await res.json();
-        if(data.user) {
-            document.getElementById("userBalance").innerText = parseFloat(data.user.balance).toFixed(2);
-            document.getElementById("totalDeposit").innerText = parseFloat(data.user.total_deposit).toFixed(2);
-            document.getElementById("totalReferrals").innerText = data.total_referrals || 0;
-            document.getElementById("userRefCode").value = data.user.ref_code;
-            
-            userGateways = data.gateways || [];
-            updateGatewayUI();
-            renderTransactions(data.transactions);
+        try {
+            const res = await fetch(`${API_URL}/api/user/${currentPhone}`);
+            const data = await res.json();
+            if(data.user) {
+                document.getElementById("userBalance").innerText = parseFloat(data.user.balance).toFixed(2);
+                document.getElementById("totalDeposit").innerText = parseFloat(data.user.total_deposit).toFixed(2);
+                document.getElementById("totalReferrals").innerText = data.total_referrals || 0;
+                document.getElementById("userRefCode").value = data.user.ref_code;
+                
+                userGateways = data.gateways || [];
+                updateGatewayUI();
+                renderTransactions(data.transactions);
+            }
+        } catch (e) {
+            console.error("Error fetching user data");
         }
     }
 
@@ -454,14 +466,18 @@
         const status = document.getElementById(`st_${method}`).value;
         if(!account_no) return alert("দয়া করে অ্যাকাউন্ট নম্বর দিন!");
 
-        const res = await fetch(`${API_URL}/api/gateway/save`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ phone: currentPhone, method, account_no, status })
-        });
-        const data = await res.json();
-        alert(data.message);
-        fetchUserData();
+        try {
+            const res = await fetch(`${API_URL}/api/gateway/save`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ phone: currentPhone, method, account_no, status })
+            });
+            const data = await res.json();
+            alert(data.message || "সংরক্ষিত হয়েছে!");
+            fetchUserData();
+        } catch (e) {
+            alert("সংরক্ষণ করতে সমস্যা হয়েছে!");
+        }
     }
 
     function selectAmount(val) {
@@ -504,14 +520,18 @@
         const trx_id = document.getElementById("depTrx").value.trim();
         if(!amount || !trx_id) return alert("সব তথ্য দিন!");
 
-        const res = await fetch(`${API_URL}/api/deposit`, {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ phone: currentPhone, method, amount, trx_id })
-        });
-        const data = await res.json();
-        alert(data.message);
-        closeModal('depositModal');
-        fetchUserData();
+        try {
+            const res = await fetch(`${API_URL}/api/deposit`, {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ phone: currentPhone, method, amount, trx_id })
+            });
+            const data = await res.json();
+            alert(data.message || "সফল!");
+            closeModal('depositModal');
+            fetchUserData();
+        } catch (e) {
+            alert("সমস্যা হয়েছে!");
+        }
     }
 
     async function submitWithdraw() {
@@ -520,14 +540,18 @@
         const amount = document.getElementById("wdAmount").value;
         if(!account_no || !amount) return alert("সব তথ্য দিন!");
 
-        const res = await fetch(`${API_URL}/api/withdraw`, {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ phone: currentPhone, method, amount, account_no })
-        });
-        const data = await res.json();
-        alert(data.message);
-        closeModal('withdrawModal');
-        fetchUserData();
+        try {
+            const res = await fetch(`${API_URL}/api/withdraw`, {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ phone: currentPhone, method, amount, account_no })
+            });
+            const data = await res.json();
+            alert(data.message || "সফল!");
+            closeModal('withdrawModal');
+            fetchUserData();
+        } catch (e) {
+            alert("সমস্যা হয়েছে!");
+        }
     }
 </script>
 </body>
