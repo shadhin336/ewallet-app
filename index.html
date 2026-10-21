@@ -110,7 +110,7 @@
                     <label>সিক্রেট পিন (PIN)</label>
                     <input type="password" id="loginPin" placeholder="****">
                 </div>
-                <button class="btn-auth" onclick="loginUser()">লগইন করুন</button>
+                <button class="btn-auth" id="loginBtn" onclick="loginUser()">লগইন করুন</button>
             </div>
 
             <div id="registerForm" style="display: none;">
@@ -126,7 +126,7 @@
                     <label>রেফারেল কোড (যদি থাকে)</label>
                     <input type="text" id="regRef" placeholder="যেমন: REF123456">
                 </div>
-                <button class="btn-auth" onclick="registerUser()">অ্যাকাউন্ট খুলুন</button>
+                <button class="btn-auth" id="regBtn" onclick="registerUser()">অ্যাকাউন্ট খুলুন</button>
             </div>
         </div>
     </div>
@@ -339,6 +339,9 @@
             return;
         }
 
+        const btn = document.getElementById("regBtn");
+        btn.innerText = "অপেক্ষা করুন...";
+
         try {
             const res = await fetch(`${API_URL}/api/register`, {
                 method: "POST",
@@ -352,10 +355,12 @@
                 localStorage.setItem("ewallet_user", phone);
                 showDashboard();
             } else {
-                alert(data.message || "রেজিস্ট্রেশন ব্যর্থ হয়েছে!");
+                alert(data.message || "রেজিস্ট্রেশন করতে সমস্যা হয়েছে!");
             }
         } catch (e) {
-            alert("সার্ভারে সংযোগ স্থাপন করা যায়নি!");
+            alert("ব্যাকএন্ড সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না! দয়া করে একটু পর চেষ্টা করুন।");
+        } finally {
+            btn.innerText = "অ্যাকাউন্ট খুলুন";
         }
     }
 
@@ -367,6 +372,9 @@
             alert("দয়া করে মোবাইল নাম্বার ও পিন দিন!");
             return;
         }
+
+        const btn = document.getElementById("loginBtn");
+        btn.innerText = "অপেক্ষা করুন...";
 
         try {
             const res = await fetch(`${API_URL}/api/login`, {
@@ -381,10 +389,12 @@
                 localStorage.setItem("ewallet_user", phone);
                 showDashboard();
             } else {
-                alert(data.message || "লগইন ব্যর্থ হয়েছে!");
+                alert(data.message || "ভুল নম্বর অথবা পিন দেওয়া হয়েছে!");
             }
         } catch (e) {
-            alert("সার্ভারে সংযোগ স্থাপন করা যায়নি!");
+            alert("ব্যাকএন্ড সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না! দয়া করে একটু পর চেষ্টা করুন।");
+        } finally {
+            btn.innerText = "লগইন করুন";
         }
     }
 
