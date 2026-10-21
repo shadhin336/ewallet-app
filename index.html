@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-WALLET | ড্যাশবোর্ড</title>
+    <title>E-WALLET | ডিজিটাল ওয়ালেট</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -42,6 +42,88 @@
             position: relative;
         }
 
+        /* Authentication Screen Styles */
+        .auth-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 85vh;
+            width: 100%;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .auth-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-subtitle {
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 14px;
+            background: #0b0f19;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .btn-auth {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple));
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 8px;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+        }
+
+        /* Dashboard View (Initially Hidden) */
+        #dashboardView {
+            display: none;
+        }
+
         .header {
             display: flex;
             justify-content: space-between;
@@ -69,37 +151,8 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
             box-shadow: 0 0 10px rgba(157, 78, 221, 0.4);
-        }
-
-        .login-bar {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .login-bar input {
-            flex: 1;
-            background: #0b0f19;
-            border: 1px solid var(--card-border);
-            color: #fff;
-            padding: 8px 12px;
-            border-radius: 8px;
-            outline: none;
-        }
-
-        .login-bar button {
-            background: var(--accent-cyan);
-            color: #000;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: bold;
             cursor: pointer;
         }
 
@@ -340,67 +393,91 @@
 <body>
 
 <div class="app-container">
-    <div class="header">
-        <div class="logo">
-            <i class="fa-solid fa-wallet"></i> E-WALLET
-        </div>
-        <div class="user-avatar" id="avatarIcon">U</div>
-    </div>
 
-    <!-- Phone Login Box -->
-    <div class="login-bar">
-        <input type="text" id="userPhoneInput" placeholder="আপনার মোবাইল নাম্বার দিন (যেমন: 01700000000)">
-        <button onclick="loginUser()">লগইন</button>
-    </div>
-
-    <!-- Main Balance Card -->
-    <div class="balance-card">
-        <div class="balance-title">TOTAL WITHDRAWABLE BALANCE</div>
-        <div class="balance-amount">
-            ৳ <span id="userBalance">0.00</span>
-        </div>
-
-        <div class="quick-actions">
-            <div class="action-btn" onclick="openDepositModal()">
-                <div class="action-icon bg-deposit"><i class="fa-solid fa-plus"></i></div>
-                <div class="action-label">Deposit</div>
+    <!-- 1. LOGIN / SIGNUP SCREEN -->
+    <div class="auth-screen" id="authView">
+        <div class="auth-card">
+            <div style="font-size: 40px; margin-bottom: 10px; color: var(--accent-cyan);">
+                <i class="fa-solid fa-wallet"></i>
             </div>
-            <div class="action-btn" onclick="alert('উইথড্র অপশন শীঘ্রই আসছে!')">
-                <div class="action-icon bg-withdraw"><i class="fa-solid fa-arrow-down"></i></div>
-                <div class="action-label">Withdraw</div>
+            <div class="auth-title">E-WALLET</div>
+            <div class="auth-subtitle">আপনার ওয়ালেটে প্রবেশ করতে মোবাইল নাম্বার দিন</div>
+
+            <div class="input-group">
+                <label>মোবাইল নাম্বার</label>
+                <input type="text" id="phoneInput" placeholder="01700000000">
             </div>
-            <div class="action-btn" onclick="alert('গেটওয়ে প্রস্তুত!')">
-                <div class="action-icon bg-gateway"><i class="fa-solid fa-credit-card"></i></div>
-                <div class="action-label">Gateway</div>
-            </div>
-            <div class="action-btn" onclick="showReferralInfo()">
-                <div class="action-icon bg-users"><i class="fa-solid fa-user-plus"></i></div>
-                <div class="action-label">Referral</div>
-            </div>
+
+            <button class="btn-auth" onclick="handleAuth()">প্রবেশ করুন / অ্যাকাউন্ট খুলুন</button>
         </div>
     </div>
 
-    <!-- Stats -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="balance-title">Total Deposit</div>
-            <div class="stat-value c-deposit">৳ <span id="totalDeposit">0.00</span></div>
+    <!-- 2. MAIN DASHBOARD VIEW (HIDDEN INITIALLY) -->
+    <div id="dashboardView">
+        <div class="header">
+            <div class="logo">
+                <i class="fa-solid fa-wallet"></i> E-WALLET
+            </div>
+            <div class="user-avatar" id="avatarIcon" onclick="logout()" title="লগআউট করতে চাপ দিন">U</div>
         </div>
-        <div class="stat-card">
-            <div class="balance-title">Total Referred</div>
-            <div class="stat-value c-withdraw"><span id="totalReferrals">0</span> জন</div>
+
+        <!-- Main Balance Card -->
+        <div class="balance-card">
+            <div class="balance-title">TOTAL WITHDRAWABLE BALANCE</div>
+            <div class="balance-amount">
+                ৳ <span id="userBalance">0.00</span>
+            </div>
+
+            <div class="quick-actions">
+                <div class="action-btn" onclick="openDepositModal()">
+                    <div class="action-icon bg-deposit"><i class="fa-solid fa-plus"></i></div>
+                    <div class="action-label">Deposit</div>
+                </div>
+                <div class="action-btn" onclick="alert('উইথড্র অপশন শীঘ্রই আসছে!')">
+                    <div class="action-icon bg-withdraw"><i class="fa-solid fa-arrow-down"></i></div>
+                    <div class="action-label">Withdraw</div>
+                </div>
+                <div class="action-btn" onclick="alert('গেটওয়ে প্রস্তুত!')">
+                    <div class="action-icon bg-gateway"><i class="fa-solid fa-credit-card"></i></div>
+                    <div class="action-label">Gateway</div>
+                </div>
+                <div class="action-btn" onclick="showReferralInfo()">
+                    <div class="action-icon bg-users"><i class="fa-solid fa-user-plus"></i></div>
+                    <div class="action-label">Referral</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="balance-title">Total Deposit</div>
+                <div class="stat-value c-deposit">৳ <span id="totalDeposit">0.00</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="balance-title">Total Referred</div>
+                <div class="stat-value c-withdraw"><span id="totalReferrals">0</span> জন</div>
+            </div>
+        </div>
+
+        <!-- Transactions -->
+        <div class="section-header">
+            <div class="section-title">Recent Transactions</div>
+        </div>
+        <div class="txn-list" id="txnContainer">
+            <div style="text-align: center; color: var(--text-sub); font-size: 13px; padding: 20px;">
+                কোনো লেনদেন পাওয়া যায়নি।
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active"><i class="fa-solid fa-house"></i> Home</div>
+            <div class="nav-item" onclick="showReferralInfo()"><i class="fa-solid fa-users"></i> Refer</div>
+            <div class="nav-item" onclick="openDepositModal()"><i class="fa-solid fa-wallet"></i> Wallet</div>
         </div>
     </div>
 
-    <!-- Transactions -->
-    <div class="section-header">
-        <div class="section-title">Recent Transactions</div>
-    </div>
-    <div class="txn-list" id="txnContainer">
-        <div style="text-align: center; color: var(--text-sub); font-size: 13px; padding: 20px;">
-            কোনো লেনদেন পাওয়া যায়নি। লগইন করুন!
-        </div>
-    </div>
 </div>
 
 <!-- Deposit Modal -->
@@ -456,25 +533,43 @@
     </div>
 </div>
 
-<!-- Bottom Navigation -->
-<div class="bottom-nav">
-    <div class="nav-item active"><i class="fa-solid fa-house"></i> Home</div>
-    <div class="nav-item" onclick="showReferralInfo()"><i class="fa-solid fa-users"></i> Refer</div>
-    <div class="nav-item" onclick="openDepositModal()"><i class="fa-solid fa-wallet"></i> Wallet</div>
-</div>
-
 <script>
-    // ⚠️ আপনার Render Web Service লাইভ হওয়ার পর প্রাপ্ত URL টি নিচে 'YOUR_RENDER_API_URL' এর জায়গায় বসাবেন
-    const API_URL = "https://my-wallet-api-sml3.onrender.com/"; 
-    let currentPhone = "";
+    // ⚠️ আপনার Render API লিঙ্কটি নিচে বসাবেন
+    const API_URL = "https://my-wallet-api-sml3.onrender.com/"; // আপনার Render এর আসল লিংক দিন
+    let currentPhone = localStorage.getItem("ewallet_user") || "";
 
-    function loginUser() {
-        const phone = document.getElementById("userPhoneInput").value.trim();
-        if (!phone) return alert("মেহেরবানি করে মোবাইল নম্বর দিন!");
+    // Auto-login check on page load
+    window.onload = function() {
+        if(currentPhone) {
+            showDashboard();
+        }
+    };
+
+    function handleAuth() {
+        const phone = document.getElementById("phoneInput").value.trim();
+        if (!phone || phone.length < 11) {
+            return alert("দয়া করে সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন!");
+        }
         
         currentPhone = phone;
-        document.getElementById("avatarIcon").innerText = phone.slice(-2);
+        localStorage.setItem("ewallet_user", phone);
+        showDashboard();
+    }
+
+    function showDashboard() {
+        document.getElementById("authView").style.display = "none";
+        document.getElementById("dashboardView").style.display = "block";
+        document.getElementById("avatarIcon").innerText = currentPhone.slice(-2);
         fetchUserData();
+    }
+
+    function logout() {
+        if(confirm("আপনি কি লগআউট করতে চান?")) {
+            localStorage.removeItem("ewallet_user");
+            currentPhone = "";
+            document.getElementById("dashboardView").style.display = "none";
+            document.getElementById("authView").style.display = "flex";
+        }
     }
 
     async function fetchUserData() {
@@ -518,7 +613,6 @@
     }
 
     function openDepositModal() {
-        if(!currentPhone) return alert("ডিপোজিট করার আগে প্রথমে আপনার নাম্বার দিয়ে লগইন করুন!");
         document.getElementById("depositModal").style.display = "flex";
     }
 
@@ -527,7 +621,6 @@
     }
 
     function showReferralInfo() {
-        if(!currentPhone) return alert("প্রথমে লগইন করুন!");
         document.getElementById("refModal").style.display = "flex";
     }
 
@@ -559,4 +652,3 @@
 </script>
 </body>
 </html>
-
