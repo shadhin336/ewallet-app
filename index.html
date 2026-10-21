@@ -22,7 +22,6 @@
         body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; }
         .app-container { width: 100%; max-width: 480px; padding: 16px; padding-bottom: 90px; position: relative; }
 
-        /* Auth Screen */
         .auth-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 85vh; width: 100%; }
         .auth-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 24px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .auth-title { font-size: 24px; font-weight: 800; text-align: center; margin-bottom: 6px; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -37,7 +36,6 @@
         .input-group input, .input-group select { width: 100%; padding: 11px; background: #0b0f19; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
         .btn-auth { width: 100%; padding: 12px; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
-        /* Dashboard */
         #dashboardView { display: none; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .logo { font-size: 20px; font-weight: 800; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 8px; }
@@ -74,7 +72,6 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-sub); font-size: 10px; cursor: pointer; }
         .nav-item.active { color: var(--accent-cyan); }
 
-        /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 200; justify-content: center; align-items: center; padding: 16px; }
         .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); width: 100%; max-width: 400px; border-radius: 16px; padding: 20px; max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
@@ -84,12 +81,8 @@
         .btn-submit { width: 100%; padding: 12px; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .admin-num-box { background: rgba(0, 242, 254, 0.1); border: 1px dashed var(--accent-cyan); padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; text-align: center; }
 
-        /* Amount Grid Buttons */
         .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
         .amt-btn { background: #0b0f19; border: 1px solid var(--card-border); padding: 8px; border-radius: 6px; color: #fff; font-size: 13px; cursor: pointer; text-align: center; }
-        .amt-btn.selected { border-color: var(--accent-cyan); background: rgba(0,242,254,0.1); color: var(--accent-cyan); font-weight: bold; }
-
-        /* Gateway Card in Modal */
         .gw-card { background: #0b0f19; border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
         .gw-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-bottom: 8px; }
     </style>
@@ -240,53 +233,34 @@
     </div>
 </div>
 
-<!-- Gateway Management Modal -->
+<!-- Gateway Modal -->
 <div class="modal" id="gatewayModal">
     <div class="modal-content">
         <div class="modal-header">
             <h3>পেমেন্ট গেটওয়ে অ্যাকাউন্ট</h3>
             <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal('gatewayModal')"></i>
         </div>
-        <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 15px;">আপনার বিকাশ, নগদ বা রকেট অ্যাকাউন্ট নম্বর এখানে যুক্ত করুন এবং একটিভ/ডিজেবল রাখুন।</p>
-        
         <div class="gw-card">
-            <div class="gw-header"><span>bKash (বিকাশ)</span> <span id="status_bKash" style="color:var(--text-sub)">Inactive</span></div>
-            <div class="form-group" style="margin-bottom:8px;">
-                <input type="text" id="acc_bKash" placeholder="বিকাশ নম্বর (017xxxxxxxx)">
-            </div>
+            <div class="gw-header"><span>bKash</span> <span id="status_bKash" style="color:var(--text-sub)">Inactive</span></div>
+            <div class="form-group" style="margin-bottom:8px;"><input type="text" id="acc_bKash" placeholder="বিকাশ নম্বর"></div>
             <div style="display:flex; gap:8px;">
-                <select id="st_bKash" style="padding:6px; font-size:12px;">
-                    <option value="Active">Active (একটিভ)</option>
-                    <option value="Inactive">Inactive (ডিজেবল)</option>
-                </select>
+                <select id="st_bKash" style="padding:6px; font-size:12px;"><option value="Active">Active</option><option value="Inactive">Inactive</option></select>
                 <button class="btn-submit" style="margin-top:0; padding:6px 12px;" onclick="saveGateway('bKash')">সেভ</button>
             </div>
         </div>
-
         <div class="gw-card">
-            <div class="gw-header"><span>Nagad (নগদ)</span> <span id="status_Nagad" style="color:var(--text-sub)">Inactive</span></div>
-            <div class="form-group" style="margin-bottom:8px;">
-                <input type="text" id="acc_Nagad" placeholder="নগদ নম্বর (018xxxxxxxx)">
-            </div>
+            <div class="gw-header"><span>Nagad</span> <span id="status_Nagad" style="color:var(--text-sub)">Inactive</span></div>
+            <div class="form-group" style="margin-bottom:8px;"><input type="text" id="acc_Nagad" placeholder="নগদ নম্বর"></div>
             <div style="display:flex; gap:8px;">
-                <select id="st_Nagad" style="padding:6px; font-size:12px;">
-                    <option value="Active">Active (একটিভ)</option>
-                    <option value="Inactive">Inactive (ডিজেবল)</option>
-                </select>
+                <select id="st_Nagad" style="padding:6px; font-size:12px;"><option value="Active">Active</option><option value="Inactive">Inactive</option></select>
                 <button class="btn-submit" style="margin-top:0; padding:6px 12px;" onclick="saveGateway('Nagad')">সেভ</button>
             </div>
         </div>
-
         <div class="gw-card">
-            <div class="gw-header"><span>Rocket (রকেট)</span> <span id="status_Rocket" style="color:var(--text-sub)">Inactive</span></div>
-            <div class="form-group" style="margin-bottom:8px;">
-                <input type="text" id="acc_Rocket" placeholder="রকেট নম্বর (019xxxxxxxx)">
-            </div>
+            <div class="gw-header"><span>Rocket</span> <span id="status_Rocket" style="color:var(--text-sub)">Inactive</span></div>
+            <div class="form-group" style="margin-bottom:8px;"><input type="text" id="acc_Rocket" placeholder="রকেট নম্বর"></div>
             <div style="display:flex; gap:8px;">
-                <select id="st_Rocket" style="padding:6px; font-size:12px;">
-                    <option value="Active">Active (একটিভ)</option>
-                    <option value="Inactive">Inactive (ডিজেবল)</option>
-                </select>
+                <select id="st_Rocket" style="padding:6px; font-size:12px;"><option value="Active">Active</option><option value="Inactive">Inactive</option></select>
                 <button class="btn-submit" style="margin-top:0; padding:6px 12px;" onclick="saveGateway('Rocket')">সেভ</button>
             </div>
         </div>
@@ -301,18 +275,15 @@
             <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal('withdrawModal')"></i>
         </div>
         <div class="form-group">
-            <label>মেথড সিলেক্ট করুন</label>
-            <select id="wdMethod">
-                <option value="bKash">bKash (বিকাশ)</option>
-                <option value="Nagad">Nagad (নগদ)</option>
-            </select>
+            <label>মেথড</label>
+            <select id="wdMethod"><option value="bKash">bKash</option><option value="Nagad">Nagad</option></select>
         </div>
         <div class="form-group">
-            <label>আপনার অ্যাকাউন্ট নম্বর</label>
-            <input type="text" id="wdAccount" placeholder="যেমন: 01700000000">
+            <label>অ্যাকাউন্ট নম্বর</label>
+            <input type="text" id="wdAccount" placeholder="নম্বর দিন">
         </div>
         <div class="form-group">
-            <label>উইথড্র পরিমাণ সিলেক্ট করুন</label>
+            <label>পরিমাণ</label>
             <div class="amount-grid">
                 <div class="amt-btn" onclick="selectWdAmount(100)">100</div>
                 <div class="amt-btn" onclick="selectWdAmount(200)">200</div>
@@ -321,7 +292,7 @@
                 <div class="amt-btn" onclick="selectWdAmount(2000)">2000</div>
                 <div class="amt-btn" onclick="selectWdAmount(5000)">5000</div>
             </div>
-            <input type="number" id="wdAmount" placeholder="অথবা নিজের পরিমাণ লিখুন">
+            <input type="number" id="wdAmount" placeholder="পরিমাণ লিখুন">
         </div>
         <button class="btn-submit" onclick="submitWithdraw()">উইথড্র রিকোয়েস্ট পাঠান</button>
     </div>
@@ -335,10 +306,9 @@
             <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal('refModal')"></i>
         </div>
         <div class="form-group">
-            <label>আপনার রেফারেল কোড</label>
+            <label>রেফারেল কোড</label>
             <input type="text" id="userRefCode" readonly>
         </div>
-        <p style="font-size: 12px; color: var(--text-sub);">এই কোডটি বন্ধুদের সাথে শেয়ার করুন এবং বোনাস জিতুন!</p>
     </div>
 </div>
 
@@ -370,7 +340,10 @@
         const pin = document.getElementById("regPin").value.trim();
         const ref_by = document.getElementById("regRef").value.trim();
 
-        if(!phone || !pin) return alert("মোবাইল নম্বর ও পিন দিন!");
+        if(!phone || !pin) {
+            alert("দয়া করে মোবাইল নাম্বার ও পিন দিন!");
+            return;
+        }
 
         try {
             const res = await fetch(`${API_URL}/api/register`, {
@@ -379,7 +352,9 @@
                 body: JSON.stringify({ phone, pin, ref_by })
             });
             const data = await res.json();
-            alert(data.message || "রেজিস্ট্রেশন সফল হয়েছে!");
+            
+            alert(data.message);
+
             if(data.success) {
                 currentPhone = phone;
                 localStorage.setItem("ewallet_user", phone);
@@ -394,7 +369,10 @@
         const phone = document.getElementById("loginPhone").value.trim();
         const pin = document.getElementById("loginPin").value.trim();
 
-        if(!phone || !pin) return alert("নম্বর ও পিন দিন!");
+        if(!phone || !pin) {
+            alert("দয়া করে মোবাইল নাম্বার ও পিন দিন!");
+            return;
+        }
 
         try {
             const res = await fetch(`${API_URL}/api/login`, {
@@ -403,7 +381,9 @@
                 body: JSON.stringify({ phone, pin })
             });
             const data = await res.json();
-            alert(data.message || "লগইন সফল হয়েছে!");
+
+            alert(data.message);
+
             if(data.success) {
                 currentPhone = phone;
                 localStorage.setItem("ewallet_user", phone);
@@ -464,7 +444,10 @@
     async function saveGateway(method) {
         const account_no = document.getElementById(`acc_${method}`).value.trim();
         const status = document.getElementById(`st_${method}`).value;
-        if(!account_no) return alert("দয়া করে অ্যাকাউন্ট নম্বর দিন!");
+        if(!account_no) {
+            alert("অ্যাকাউন্ট নম্বর দিন!");
+            return;
+        }
 
         try {
             const res = await fetch(`${API_URL}/api/gateway/save`, {
@@ -473,20 +456,15 @@
                 body: JSON.stringify({ phone: currentPhone, method, account_no, status })
             });
             const data = await res.json();
-            alert(data.message || "সংরক্ষিত হয়েছে!");
+            alert(data.message);
             fetchUserData();
         } catch (e) {
             alert("সংরক্ষণ করতে সমস্যা হয়েছে!");
         }
     }
 
-    function selectAmount(val) {
-        document.getElementById("depAmount").value = val;
-    }
-
-    function selectWdAmount(val) {
-        document.getElementById("wdAmount").value = val;
-    }
+    function selectAmount(val) { document.getElementById("depAmount").value = val; }
+    function selectWdAmount(val) { document.getElementById("wdAmount").value = val; }
 
     function renderTransactions(txns) {
         const container = document.getElementById("txnContainer");
@@ -518,7 +496,10 @@
         const method = document.getElementById("depMethod").value;
         const amount = document.getElementById("depAmount").value;
         const trx_id = document.getElementById("depTrx").value.trim();
-        if(!amount || !trx_id) return alert("সব তথ্য দিন!");
+        if(!amount || !trx_id) {
+            alert("সব তথ্য দিন!");
+            return;
+        }
 
         try {
             const res = await fetch(`${API_URL}/api/deposit`, {
@@ -526,19 +507,20 @@
                 body: JSON.stringify({ phone: currentPhone, method, amount, trx_id })
             });
             const data = await res.json();
-            alert(data.message || "সফল!");
+            alert(data.message);
             closeModal('depositModal');
             fetchUserData();
-        } catch (e) {
-            alert("সমস্যা হয়েছে!");
-        }
+        } catch (e) { alert("সমস্যা হয়েছে!"); }
     }
 
     async function submitWithdraw() {
         const method = document.getElementById("wdMethod").value;
         const account_no = document.getElementById("wdAccount").value.trim();
         const amount = document.getElementById("wdAmount").value;
-        if(!account_no || !amount) return alert("সব তথ্য দিন!");
+        if(!account_no || !amount) {
+            alert("সব তথ্য দিন!");
+            return;
+        }
 
         try {
             const res = await fetch(`${API_URL}/api/withdraw`, {
@@ -546,12 +528,10 @@
                 body: JSON.stringify({ phone: currentPhone, method, amount, account_no })
             });
             const data = await res.json();
-            alert(data.message || "সফল!");
+            alert(data.message);
             closeModal('withdrawModal');
             fetchUserData();
-        } catch (e) {
-            alert("সমস্যা হয়েছে!");
-        }
+        } catch (e) { alert("সমস্যা হয়েছে!"); }
     }
 </script>
 </body>
