@@ -1,1 +1,562 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-WALLET | ড্যাশবোর্ড</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #151c2c;
+            --card-border: #232d42;
+            --accent-cyan: #00f2fe;
+            --accent-purple: #9d4edd;
+            --accent-pink: #ff007f;
+            --accent-green: #00e676;
+            --text-main: #ffffff;
+            --text-sub: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            padding: 16px;
+            padding-bottom: 90px;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.4);
+        }
+
+        .login-bar {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .login-bar input {
+            flex: 1;
+            background: #0b0f19;
+            border: 1px solid var(--card-border);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .login-bar button {
+            background: var(--accent-cyan);
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .balance-card {
+            background: linear-gradient(145deg, #182238, #0e1525);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            margin-bottom: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .balance-title {
+            font-size: 11px;
+            color: var(--text-sub);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .balance-amount {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #fff;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 12px 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .action-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .bg-deposit { background: linear-gradient(135deg, #a855f7, #6b21a8); color: white; }
+        .bg-withdraw { background: linear-gradient(135deg, #f43f5e, #be123c); color: white; }
+        .bg-gateway { background: linear-gradient(135deg, #10b981, #047857); color: white; }
+        .bg-users { background: linear-gradient(135deg, #f59e0b, #b45309); color: white; }
+
+        .action-label {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 14px;
+            border-radius: 14px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+
+        .c-deposit { color: var(--accent-cyan); }
+        .c-withdraw { color: var(--accent-pink); }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .txn-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .txn-item {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        .status-Pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .status-Approved { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: rgba(21, 28, 44, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-sub);
+            font-size: 10px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .nav-item.active {
+            color: var(--accent-cyan);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            width: 100%;
+            max-width: 400px;
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            background: #0b0f19;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: #fff;
+            outline: none;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple));
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .admin-num-box {
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px dashed var(--accent-cyan);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <div class="logo">
+            <i class="fa-solid fa-wallet"></i> E-WALLET
+        </div>
+        <div class="user-avatar" id="avatarIcon">U</div>
+    </div>
+
+    <!-- Phone Login Box -->
+    <div class="login-bar">
+        <input type="text" id="userPhoneInput" placeholder="আপনার মোবাইল নাম্বার দিন (যেমন: 01700000000)">
+        <button onclick="loginUser()">লগইন</button>
+    </div>
+
+    <!-- Main Balance Card -->
+    <div class="balance-card">
+        <div class="balance-title">TOTAL WITHDRAWABLE BALANCE</div>
+        <div class="balance-amount">
+            ৳ <span id="userBalance">0.00</span>
+        </div>
+
+        <div class="quick-actions">
+            <div class="action-btn" onclick="openDepositModal()">
+                <div class="action-icon bg-deposit"><i class="fa-solid fa-plus"></i></div>
+                <div class="action-label">Deposit</div>
+            </div>
+            <div class="action-btn" onclick="alert('উইথড্র অপশন শীঘ্রই আসছে!')">
+                <div class="action-icon bg-withdraw"><i class="fa-solid fa-arrow-down"></i></div>
+                <div class="action-label">Withdraw</div>
+            </div>
+            <div class="action-btn" onclick="alert('গেটওয়ে প্রস্তুত!')">
+                <div class="action-icon bg-gateway"><i class="fa-solid fa-credit-card"></i></div>
+                <div class="action-label">Gateway</div>
+            </div>
+            <div class="action-btn" onclick="showReferralInfo()">
+                <div class="action-icon bg-users"><i class="fa-solid fa-user-plus"></i></div>
+                <div class="action-label">Referral</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="balance-title">Total Deposit</div>
+            <div class="stat-value c-deposit">৳ <span id="totalDeposit">0.00</span></div>
+        </div>
+        <div class="stat-card">
+            <div class="balance-title">Total Referred</div>
+            <div class="stat-value c-withdraw"><span id="totalReferrals">0</span> জন</div>
+        </div>
+    </div>
+
+    <!-- Transactions -->
+    <div class="section-header">
+        <div class="section-title">Recent Transactions</div>
+    </div>
+    <div class="txn-list" id="txnContainer">
+        <div style="text-align: center; color: var(--text-sub); font-size: 13px; padding: 20px;">
+            কোনো লেনদেন পাওয়া যায়নি। লগইন করুন!
+        </div>
+    </div>
+</div>
+
+<!-- Deposit Modal -->
+<div class="modal" id="depositModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>ডিপোজিট করুন</h3>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal()"></i>
+        </div>
+        
+        <div class="admin-num-box">
+            অ্যাডমিন ক্যাশ-আউট/সেন্ড মানি নাম্বার:<br>
+            <strong id="adminNumber">01700000000 (bKash/Nagad)</strong>
+        </div>
+
+        <div class="form-group">
+            <label>পেমেন্ট মেথড সিলেক্ট করুন</label>
+            <select id="depMethod">
+                <option value="bKash">bKash (বিকাশ)</option>
+                <option value="Nagad">Nagad (নগদ)</option>
+                <option value="Rocket">Rocket (রকেট)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>টাকার পরিমাণ (BDT)</label>
+            <input type="number" id="depAmount" placeholder="যেমন: 500">
+        </div>
+
+        <div class="form-group">
+            <label>ট্রানজেকশন আইডি (TrxID)</label>
+            <input type="text" id="depTrx" placeholder="যেমন: 8N7X6W5Y">
+        </div>
+
+        <button class="btn-submit" onclick="submitDeposit()">ডিপোজিট জমা দিন</button>
+    </div>
+</div>
+
+<!-- Referral Modal -->
+<div class="modal" id="refModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>রেফারেল তথ্য</h3>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeRefModal()"></i>
+        </div>
+        <div class="form-group">
+            <label>আপনার রেফারেল কোড</label>
+            <input type="text" id="userRefCode" readonly>
+        </div>
+        <p style="font-size: 12px; color: var(--text-sub);">
+            আপনার রেফার কোড দিয়ে বন্ধুদের জয়েন করালে বোনাস পাবেন!
+        </p>
+    </div>
+</div>
+
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+    <div class="nav-item active"><i class="fa-solid fa-house"></i> Home</div>
+    <div class="nav-item" onclick="showReferralInfo()"><i class="fa-solid fa-users"></i> Refer</div>
+    <div class="nav-item" onclick="openDepositModal()"><i class="fa-solid fa-wallet"></i> Wallet</div>
+</div>
+
+<script>
+    // ⚠️ আপনার Render Web Service লাইভ হওয়ার পর প্রাপ্ত URL টি নিচে 'YOUR_RENDER_API_URL' এর জায়গায় বসাবেন
+    const API_URL = "YOUR_RENDER_API_URL"; 
+    let currentPhone = "";
+
+    function loginUser() {
+        const phone = document.getElementById("userPhoneInput").value.trim();
+        if (!phone) return alert("মেহেরবানি করে মোবাইল নম্বর দিন!");
+        
+        currentPhone = phone;
+        document.getElementById("avatarIcon").innerText = phone.slice(-2);
+        fetchUserData();
+    }
+
+    async function fetchUserData() {
+        if(!currentPhone) return;
+        try {
+            const res = await fetch(`${API_URL}/api/user/${currentPhone}`);
+            const data = await res.json();
+            
+            if(data.user) {
+                document.getElementById("userBalance").innerText = parseFloat(data.user.balance).toFixed(2);
+                document.getElementById("totalDeposit").innerText = parseFloat(data.user.total_deposit).toFixed(2);
+                document.getElementById("totalReferrals").innerText = data.total_referrals || 0;
+                document.getElementById("userRefCode").value = data.user.ref_code;
+                
+                renderTransactions(data.transactions);
+            }
+        } catch (e) {
+            console.error("Error loading data:", e);
+        }
+    }
+
+    function renderTransactions(transactions) {
+        const container = document.getElementById("txnContainer");
+        if(!transactions || transactions.length === 0) {
+            container.innerHTML = `<div style="text-align: center; color: var(--text-sub); font-size: 13px; padding: 20px;">কোনো লেনদেন পাওয়া যায়নি!</div>`;
+            return;
+        }
+
+        container.innerHTML = transactions.map(t => `
+            <div class="txn-item">
+                <div>
+                    <div style="font-weight: bold; font-size: 14px;">${t.type} (${t.method})</div>
+                    <div style="font-size: 11px; color: var(--text-sub);">TrxID: ${t.trx_id || 'N/A'}</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-weight: bold; font-size: 14px; color: var(--accent-cyan);">+৳${parseFloat(t.amount).toFixed(2)}</div>
+                    <span class="status-badge status-${t.status}">${t.status}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function openDepositModal() {
+        if(!currentPhone) return alert("ডিপোজিট করার আগে প্রথমে আপনার নাম্বার দিয়ে লগইন করুন!");
+        document.getElementById("depositModal").style.display = "flex";
+    }
+
+    function closeModal() {
+        document.getElementById("depositModal").style.display = "none";
+    }
+
+    function showReferralInfo() {
+        if(!currentPhone) return alert("প্রথমে লগইন করুন!");
+        document.getElementById("refModal").style.display = "flex";
+    }
+
+    function closeRefModal() {
+        document.getElementById("refModal").style.display = "none";
+    }
+
+    async function submitDeposit() {
+        const method = document.getElementById("depMethod").value;
+        const amount = document.getElementById("depAmount").value;
+        const trx_id = document.getElementById("depTrx").value.trim();
+
+        if(!amount || !trx_id) return alert("সবগুলো তথ্য সঠিকভাবে পূরণ করুন!");
+
+        try {
+            const res = await fetch(`${API_URL}/api/deposit`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ phone: currentPhone, method, amount, trx_id })
+            });
+            const data = await res.json();
+            alert(data.message);
+            closeModal();
+            fetchUserData();
+        } catch (e) {
+            alert("ডিপোজিট রিকোয়েস্ট পাঠাতে ব্যর্থ হয়েছে!");
+        }
+    }
+</script>
+</body>
+</html>
 
