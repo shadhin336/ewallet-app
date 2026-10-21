@@ -34,7 +34,7 @@
 
         .input-group { margin-bottom: 14px; }
         .input-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; }
-        .input-group input { width: 100%; padding: 11px; background: #0b0f19; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
+        .input-group input, .input-group select { width: 100%; padding: 11px; background: #0b0f19; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; font-size: 14px; outline: none; }
         .btn-auth { width: 100%; padding: 12px; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
         /* Dashboard */
@@ -76,13 +76,22 @@
 
         /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 200; justify-content: center; align-items: center; padding: 16px; }
-        .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); width: 100%; max-width: 400px; border-radius: 16px; padding: 20px; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--card-border); width: 100%; max-width: 400px; border-radius: 16px; padding: 20px; max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 5px; }
         .form-group input, .form-group select { width: 100%; padding: 10px; background: #0b0f19; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; outline: none; }
         .btn-submit { width: 100%; padding: 12px; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .admin-num-box { background: rgba(0, 242, 254, 0.1); border: 1px dashed var(--accent-cyan); padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; text-align: center; }
+
+        /* Amount Grid Buttons */
+        .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+        .amt-btn { background: #0b0f19; border: 1px solid var(--card-border); padding: 8px; border-radius: 6px; color: #fff; font-size: 13px; cursor: pointer; text-align: center; }
+        .amt-btn.selected { border-color: var(--accent-cyan); background: rgba(0,242,254,0.1); color: var(--accent-cyan); font-weight: bold; }
+
+        /* Gateway Card in Modal */
+        .gw-card { background: #0b0f19; border: 1px solid var(--card-border); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+        .gw-header { display: flex; justify-content: space-between; font-weight: bold; font-size: 13px; margin-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -152,7 +161,7 @@
                     <div class="action-icon bg-withdraw"><i class="fa-solid fa-arrow-down"></i></div>
                     <div class="action-label">Withdraw</div>
                 </div>
-                <div class="action-btn" onclick="alert('গেটওয়ে নিরাপদ ও সক্রিয় আছে!')">
+                <div class="action-btn" onclick="openGatewayModal()">
                     <div class="action-icon bg-gateway"><i class="fa-solid fa-credit-card"></i></div>
                     <div class="action-label">Gateway</div>
                 </div>
@@ -212,14 +221,75 @@
             </select>
         </div>
         <div class="form-group">
-            <label>টাকার পরিমাণ (BDT)</label>
-            <input type="number" id="depAmount" placeholder="যেমন: 500">
+            <label>টাকার পরিমাণ সিলেক্ট করুন</label>
+            <div class="amount-grid">
+                <div class="amt-btn" onclick="selectAmount(100)">100</div>
+                <div class="amt-btn" onclick="selectAmount(200)">200</div>
+                <div class="amt-btn" onclick="selectAmount(300)">300</div>
+                <div class="amt-btn" onclick="selectAmount(500)">500</div>
+                <div class="amt-btn" onclick="selectAmount(1000)">1000</div>
+                <div class="amt-btn" onclick="selectAmount(2000)">2000</div>
+            </div>
+            <input type="number" id="depAmount" placeholder="অথবা নিজের পরিমাণ লিখুন">
         </div>
         <div class="form-group">
             <label>ট্রানজেকশন আইডি (TrxID)</label>
             <input type="text" id="depTrx" placeholder="যেমন: 9N8H7G6F">
         </div>
         <button class="btn-submit" onclick="submitDeposit()">ডিপোজিট জমা দিন</button>
+    </div>
+</div>
+
+<!-- Gateway Management Modal -->
+<div class="modal" id="gatewayModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>পেমেন্ট গেটওয়ে অ্যাকাউন্ট</h3>
+            <i class="fa-solid fa-xmark" style="cursor:pointer;" onclick="closeModal('gatewayModal')"></i>
+        </div>
+        <p style="font-size: 12px; color: var(--text-sub); margin-bottom: 15px;">আপনার বিকাশ, নগদ বা রকেট অ্যাকাউন্ট নম্বর এখানে যুক্ত করুন এবং একটিভ/ডিজেবল রাখুন।</p>
+        
+        <div class="gw-card">
+            <div class="gw-header"><span>bKash (বিকাশ)</span> <span id="status_bKash" style="color:var(--text-sub)">Inactive</span></div>
+            <div class="form-group" style="margin-bottom:8px;">
+                <input type="text" id="acc_bKash" placeholder="বিকাশ নম্বর (017xxxxxxxx)">
+            </div>
+            <div style="display:flex; gap:8px;">
+                <select id="st_bKash" style="padding:6px; font-size:12px;">
+                    <option value="Active">Active (একটিভ)</option>
+                    <option value="Inactive">Inactive (ডিজেবল)</option>
+                </select>
+                <button class="btn-submit" style="margin-top:0; padding:6px 12px;" onclick="saveGateway('bKash')">সেভ</button>
+            </div>
+        </div>
+
+        <div class="gw-card">
+            <div class="gw-header"><span>Nagad (নগদ)</span> <span id="status_Nagad" style="color:var(--text-sub)">Inactive</span></div>
+            <div class="form-group" style="margin-bottom:8px;">
+                <input type="text" id="acc_Nagad" placeholder="নগদ নম্বর (018xxxxxxxx)">
+            </div>
+            <div style="display:flex; gap:8px;">
+                <select id="st_Nagad" style="padding:6px; font-size:12px;">
+                    <option value="Active">Active (একটিভ)</option>
+                    <option value="Inactive">Inactive (ডিজেবল)</option>
+                </select>
+                <button class="btn-submit" style="margin-top:0; padding:6px 12px;" onclick="saveGateway('Nagad')">সেভ</button>
+            </div>
+        </div>
+
+        <div class="gw-card">
+            <div class="gw-header"><span>Rocket (রকেট)</span> <span id="status_Rocket" style="color:var(--text-sub)">Inactive</span></div>
+            <div class="form-group" style="margin-bottom:8px;">
+                <input type="text" id="acc_Rocket" placeholder="রকেট নম্বর (019xxxxxxxx)">
+            </div>
+            <div style="display:flex; gap:8px;">
+                <select id="st_Rocket" style="padding:6px; font-size:12px;">
+                    <option value="Active">Active (একটিভ)</option>
+                    <option value="Inactive">Inactive (ডিজেবল)</option>
+                </select>
+                <button class="btn-submit" style="margin-top:0; padding:6px 12px;" onclick="saveGateway('Rocket')">সেভ</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -242,8 +312,16 @@
             <input type="text" id="wdAccount" placeholder="যেমন: 01700000000">
         </div>
         <div class="form-group">
-            <label>উইথড্র পরিমাণ (BDT)</label>
-            <input type="number" id="wdAmount" placeholder="যেমন: 300">
+            <label>উইথড্র পরিমাণ সিলেক্ট করুন</label>
+            <div class="amount-grid">
+                <div class="amt-btn" onclick="selectWdAmount(100)">100</div>
+                <div class="amt-btn" onclick="selectWdAmount(200)">200</div>
+                <div class="amt-btn" onclick="selectWdAmount(500)">500</div>
+                <div class="amt-btn" onclick="selectWdAmount(1000)">1000</div>
+                <div class="amt-btn" onclick="selectWdAmount(2000)">2000</div>
+                <div class="amt-btn" onclick="selectWdAmount(5000)">5000</div>
+            </div>
+            <input type="number" id="wdAmount" placeholder="অথবা নিজের পরিমাণ লিখুন">
         </div>
         <button class="btn-submit" onclick="submitWithdraw()">উইথড্র রিকোয়েস্ট পাঠান</button>
     </div>
@@ -267,6 +345,7 @@
 <script>
     const API_URL = "https://my-wallet-api-sml3.onrender.com";
     let currentPhone = localStorage.getItem("ewallet_user") || "";
+    let userGateways = [];
 
     window.onload = function() {
         if(currentPhone) showDashboard();
@@ -350,8 +429,47 @@
             document.getElementById("totalDeposit").innerText = parseFloat(data.user.total_deposit).toFixed(2);
             document.getElementById("totalReferrals").innerText = data.total_referrals || 0;
             document.getElementById("userRefCode").value = data.user.ref_code;
+            
+            userGateways = data.gateways || [];
+            updateGatewayUI();
             renderTransactions(data.transactions);
         }
+    }
+
+    function updateGatewayUI() {
+        ['bKash', 'Nagad', 'Rocket'].forEach(m => {
+            const found = userGateways.find(g => g.method === m);
+            if(found) {
+                document.getElementById(`acc_${m}`).value = found.account_no;
+                document.getElementById(`st_${m}`).value = found.status;
+                const statusSpan = document.getElementById(`status_${m}`);
+                statusSpan.innerText = found.status;
+                statusSpan.style.color = found.status === 'Active' ? 'var(--accent-green)' : 'var(--accent-pink)';
+            }
+        });
+    }
+
+    async function saveGateway(method) {
+        const account_no = document.getElementById(`acc_${method}`).value.trim();
+        const status = document.getElementById(`st_${method}`).value;
+        if(!account_no) return alert("দয়া করে অ্যাকাউন্ট নম্বর দিন!");
+
+        const res = await fetch(`${API_URL}/api/gateway/save`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ phone: currentPhone, method, account_no, status })
+        });
+        const data = await res.json();
+        alert(data.message);
+        fetchUserData();
+    }
+
+    function selectAmount(val) {
+        document.getElementById("depAmount").value = val;
+    }
+
+    function selectWdAmount(val) {
+        document.getElementById("wdAmount").value = val;
     }
 
     function renderTransactions(txns) {
@@ -376,6 +494,7 @@
 
     function openDepositModal() { document.getElementById("depositModal").style.display = "flex"; }
     function openWithdrawModal() { document.getElementById("withdrawModal").style.display = "flex"; }
+    function openGatewayModal() { document.getElementById("gatewayModal").style.display = "flex"; }
     function showReferralInfo() { document.getElementById("refModal").style.display = "flex"; }
     function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
